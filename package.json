@@ -2,13 +2,15 @@
   "name": "ts-seed-backend",
   "version": "0.1.0",
   "description": "Typescript seed used to develop backend services",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "start": "node dist/",
     "dev": "nodemon --watch './src/**/*.ts' --exec 'ts-node' ./src/index.ts",
-    "build": "rm -rf lib && tsc",
-    "test": "jest ts-node/register 'test/**/*.test.ts'",
+    "build": "rm -rf dist && tsc",
+    "test": "jest --runInBand \\.test\\.ts",
+    "test:unit": "jest --runInBand \\.unit\\.test\\.ts",
     "cover": "jest --coverage",
-    "lint": "./node_modules/eslint/bin/eslint.js  './src/**.ts'"
+    "lint": "./node_modules/eslint/bin/eslint.js ./src --ext .ts"
   },
   "author": "Ariel Ril",
   "license": "MIT",

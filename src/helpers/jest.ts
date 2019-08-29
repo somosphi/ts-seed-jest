@@ -2,13 +2,17 @@ import joi from 'joi';
 import winston from 'winston';
 import database from './database';
 
+interface ToMatchSchema {
+  message(): string;
+  pass: boolean;
+}
+
 /**
  * Checks if the object matches the schema
- * @param {Object} received Object to be checked
- * @param {import('joi').Schema} schema Joi schema
- * @returns {{ message: Function, pass: Boolean }}
+ * @param received Object to be checked
+ * @param schema Joi schema
  */
-function toMatchSchema(received: Object, schema: joi.AnySchema) {
+function toMatchSchema(received: object, schema: joi.AnySchema): ToMatchSchema {
   const { error } = joi.validate(received, schema);
 
   if (!error) {

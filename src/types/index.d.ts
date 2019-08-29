@@ -4,17 +4,17 @@ import { UserModel } from '../container/models/user';
 import { UserSources } from '../helpers/enums';
 
 export interface AppConfig {
-  apmServiceName?: string;
-  apmServerUrl?: string;
-  httpPort: number;
-  httpBodyLimit: string;
+  readonly apmServiceName?: string;
+  readonly apmServerUrl?: string;
+  readonly httpPort: number;
+  readonly httpBodyLimit: string;
 }
 
 interface Env {
-  apmServiceName?: string;
-  apmServerUrl?: string;
-  httpPort: number;
-  httpBodyLimit: string;
+  readonly apmServiceName?: string;
+  readonly apmServerUrl?: string;
+  readonly httpPort: number;
+  readonly httpBodyLimit: string;
 }
 
 interface ICodedError {

@@ -1,4 +1,3 @@
-import knex from 'knex';
 import { UserModel } from './models/user';
 import { UserService } from './services/user';
 import { ContainerConfig, ServiceContext } from '../types';

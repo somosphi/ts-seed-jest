@@ -1,5 +1,5 @@
 apps:
-  - script   : 'lib/index.js'
+  - script   : 'dist/index.js'
     name     : 'ts-seed'
     exec_mode: 'cluster'
     instances: 1
