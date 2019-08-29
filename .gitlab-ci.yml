@@ -2,10 +2,6 @@ image: alpine
 
 stages:
   - test
-  - Building-Docker-Image
-  - Pushing-Image-Repo
-  - Building-Artifact
-  - Deploying-Kubernetes
 
 test-dev:
   stage: test
