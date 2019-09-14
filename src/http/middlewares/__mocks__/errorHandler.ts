@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import { ResourceNotFoundError, CodedError, NotFoundError } from '../../errors';
-import { Logger as logger } from '../../logger';
+import { Request, Response } from 'express';
+import { ResourceNotFoundError, CodedError, NotFoundError } from '../../../errors';
+import { logger } from '../../../logger';
 
-export const errorHandlerMiddleware =
-  (err: any, req: Request, res: Response, next: NextFunction) => {
+export const errorHandlerMiddleware = (req: Request, res: Response) =>
+  (err: any, request: Request, response: Response): Response => {
     if (err instanceof CodedError) {
       logger.warn(err);
     } else {

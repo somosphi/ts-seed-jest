@@ -3,17 +3,19 @@ import helmet from 'helmet';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import compression from 'compression';
+import { ExpressLogger } from '../logger';
+
 import { Container } from '../container';
-import { UserController } from './controllers/user';
+import { UserController } from './controllers/v1/user';
 import { Controller } from './controllers/controller';
 import { errorHandlerMiddleware } from './middlewares/errorHandler';
 import { NotFoundError } from '../errors';
 import { HttpServerConfig } from '../types';
 
 export class HttpServer {
-  protected app?: express.Application;
-  protected container: Container;
-  protected config: HttpServerConfig;
+  private app?: express.Application;
+  private readonly container: Container;
+  private readonly config: HttpServerConfig;
 
   constructor (container: Container, config: HttpServerConfig) {
     this.container = container;
@@ -52,6 +54,10 @@ export class HttpServer {
     app.use(bodyParser.json({
       limit: this.config.bodyLimit,
     }));
+
+    /** Add Logger to Express */
+    app.use(ExpressLogger.onSuccess.bind(ExpressLogger));
+    app.use(ExpressLogger.onError.bind(ExpressLogger));
 
     /* Status endpoint */
     app.get(

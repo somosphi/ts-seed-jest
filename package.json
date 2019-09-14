@@ -10,7 +10,7 @@
     "test": "jest --runInBand \\.test\\.ts",
     "test:unit": "jest --runInBand \\.unit\\.test\\.ts",
     "cover": "jest --coverage",
-    "lint": "./node_modules/eslint/bin/eslint.js ./src --ext .ts"
+    "lint": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'"
   },
   "author": "Ariel Ril",
   "license": "MIT",
@@ -21,6 +21,7 @@
   "dependencies": {
     "@4alltecnologia/http-errors": "^1.1.0",
     "@hapi/joi": "^15.1.0",
+    "@somosphi/logger": "^1.2.7",
     "@types/ramda": "^0.26.21",
     "axios": "^0.19.0",
     "body-parser": "^1.19.0",
@@ -30,38 +31,36 @@
     "elastic-apm-node": "^2.12.1",
     "express": "^4.17.1",
     "helmet": "^3.18.0",
-    "joi": "^14.3.1",
     "knex": "^0.18.3",
     "moment-timezone": "^0.5.25",
+    "mongoose": "^5.6.12",
     "mysql2": "^1.6.5",
     "ramda": "^0.26.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.0",
     "@types/body-parser": "^1.17.0",
     "@types/compression": "0.0.36",
     "@types/cors": "^2.8.5",
     "@types/dotenv": "^6.1.1",
-    "@types/elastic-apm-node": "^2.7.0",
     "@types/express": "^4.17.0",
     "@types/helmet": "0.0.43",
     "@types/jest": "^24.0.18",
     "@types/joi": "^14.3.3",
-    "@types/knex": "^0.16.1",
     "@types/moment-timezone": "^0.5.12",
     "@types/nock": "^10.0.3",
     "@types/sinon": "^7.0.13",
-    "@types/winston": "^2.4.4",
-    "@typescript-eslint/eslint-plugin": "^2.0.0",
-    "@typescript-eslint/parser": "^2.0.0",
     "eslint": "^6.2.2",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jest": "^22.15.2",
     "jest": "^24.9.0",
     "nock": "^10.0.6",
     "sinon": "^7.3.2",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.3.0",
-    "typescript": "^3.5.2"
+    "tslint": "^5.18.0",
+    "tslint-config-airbnb": "^5.11.1",
+    "typescript": "^3.6.2"
   }
 }

@@ -2,17 +2,12 @@ import joi from 'joi';
 import winston from 'winston';
 import database from './database';
 
-interface ToMatchSchema {
-  message(): string;
-  pass: boolean;
-}
-
 /**
  * Checks if the object matches the schema
  * @param received Object to be checked
  * @param schema Joi schema
  */
-function toMatchSchema(received: object, schema: joi.AnySchema): ToMatchSchema {
+function toMatchSchema(received: object, schema: joi.AnySchema) {
   const { error } = joi.validate(received, schema);
 
   if (!error) {
@@ -33,7 +28,6 @@ expect.extend({ toMatchSchema });
 winston.configure({
   transports: [new winston.transports.Console({ silent: true })],
 });
-
 
 afterAll(() => {
   if (database) {

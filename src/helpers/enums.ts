@@ -1,3 +1,4 @@
-export enum UserSources {
-  JsonPlaceholder = 'JSON_PLACEHOLDER',
+export enum Status {
+  ACTIVE = 'ATIVO',
+  INACTIVE = 'INATIVO',
 }

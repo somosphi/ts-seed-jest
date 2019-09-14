@@ -1,9 +1,11 @@
+import { curryN } from 'ramda';
 import joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
 import { ValidationError } from '../../errors';
 
-export const validatorMiddleware = (schema: joi.Schema) =>
-  (req: Request, res: Response, next: NextFunction) => {
+export const validatorMiddleware = curryN(
+  4,
+  (schema: joi.Schema, req: Request, res: Response, next: NextFunction) => {
     const validation = joi.validate(req, schema, {
       abortEarly: false,
       stripUnknown: true,
@@ -17,4 +19,5 @@ export const validatorMiddleware = (schema: joi.Schema) =>
     Object.assign(req, validation.value);
 
     return next();
-  };
+  },
+);

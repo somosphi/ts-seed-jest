@@ -1,12 +1,13 @@
 import * as R from 'ramda';
+
+import { Logger as logger } from './logger';
 import { env } from './env';
-import { logger } from './logger';
 import { Application } from './app';
 import { AppConfig } from './types';
 
 const appConfig: AppConfig = R.pick(
   ['apmServiceName', 'apmServiceUrl', 'httpPort', 'httpBodyLimit'],
-  env
+  env,
 );
 
 const application = new Application(appConfig);

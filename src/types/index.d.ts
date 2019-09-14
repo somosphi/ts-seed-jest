@@ -1,13 +1,13 @@
 import knex from 'knex';
 
 import { UserModel } from '../container/models/user';
-import { UserSources } from '../helpers/enums';
 
 export interface AppConfig {
   readonly apmServiceName?: string;
   readonly apmServerUrl?: string;
   readonly httpPort: number;
   readonly httpBodyLimit: string;
+  readonly dbConnector: string;
 }
 
 interface Env {
@@ -15,6 +15,8 @@ interface Env {
   readonly apmServerUrl?: string;
   readonly httpPort: number;
   readonly httpBodyLimit: string;
+  readonly dbConnector: string;
+  readonly userServiceHelper?: string;
 }
 
 interface ICodedError {
@@ -41,7 +43,6 @@ export interface User {
   name: string;
   username: string;
   emailAddress: string;
-  source: UserSources;
   createdAt: Date;
   updatedAt: Date;
 }

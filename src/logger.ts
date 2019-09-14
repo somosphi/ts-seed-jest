@@ -1,18 +1,13 @@
-import winston from 'winston';
-import moment from 'moment-timezone';
+import * as BLogger from '@somosphi/logger';
 
-const {
-  combine, splat, colorize, printf,
-} = winston.format;
-
-export const customFormat = printf((info) => {
-  const message = info instanceof Error ? info.stack : info.message;
-  return `[${moment(info.timestamp)
-    .utc()
-    .format('YYYY-MM-DD HH:mm:ss')}] ${info.level}: ${message}`;
+const { AxiosLogger, ExpressLogger, Logger, RequestLogger } = BLogger.init({
+  PROJECT_NAME: 'ts-seed-backend',
+  OMIT_ROUTES: ['/status', '/info'],
 });
 
-export const logger = winston.createLogger({
-  format: combine(splat(), colorize(), customFormat),
-  transports: [new winston.transports.Console({})],
-});
+export {
+  AxiosLogger,
+  ExpressLogger,
+  Logger,
+  RequestLogger,
+};
