@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import { UserService } from '../user';
-import { ResourceNotFoundError } from '../../../errors';
-import { User } from '../../../types';
+import { BadRequest } from '../../../errors';
+import { User } from '../../../types/containers/services/User';
 
 describe('UserService', () => {
 
@@ -59,7 +59,7 @@ describe('UserService', () => {
         error = err;
       }
 
-      expect(error).toBeInstanceOf(ResourceNotFoundError);
+      expect(error).toBeInstanceOf(BadRequest);
     });
   });
 

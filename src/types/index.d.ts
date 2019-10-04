@@ -29,20 +29,3 @@ export interface HttpServerConfig {
   port: number;
   bodyLimit: string;
 }
-
-export interface ServiceContext {
-  userModel: UserModel;
-}
-
-export interface ContainerConfig {
-  mysqlDatabase: knex;
-}
-
-export interface User {
-  id: string;
-  name: string;
-  username: string;
-  emailAddress: string;
-  createdAt: Date;
-  updatedAt: Date;
-}

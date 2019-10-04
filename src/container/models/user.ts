@@ -1,7 +1,6 @@
 import { Transaction } from 'knex';
 import { MySQLModel } from './mysql';
-import { UserSources } from '../../helpers/enums';
-import { User } from '../../types';
+import { User } from '../../types/containers/services/User';
 
 export class UserModel extends MySQLModel<User> {
 
@@ -10,7 +9,7 @@ export class UserModel extends MySQLModel<User> {
   }
 
   async getByEmailsWithSource(
-    emails: string[], source: UserSources, trx?: Transaction,
+    emails: string[], source: any, trx?: Transaction,
   ): Promise<User[]> {
     return await this.transactionable(trx)
       .whereIn('emailAddress', emails)

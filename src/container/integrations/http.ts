@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
-import { Random } from 'random-js';
 
 import { AxiosLogger } from '../../logger';
 
@@ -8,6 +7,6 @@ export abstract class HttpIntegration {
 
   constructor (options: AxiosRequestConfig) {
     this.instance = axios.create(options);
-    AxiosLogger.attachInterceptor.bind(AxiosLogger, this.instance);
+    AxiosLogger.attachInterceptor.bind(AxiosLogger)(this.instance);
   }
 }

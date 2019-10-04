@@ -1,7 +1,6 @@
 import { UserModel } from '../user';
 import sinon from 'sinon';
-import { UserSources } from '../../../helpers/enums';
-import { User } from '../../../types';
+import { User } from '../../../types/containers/services/User';
 
 describe('UserModel', () => {
 
@@ -21,7 +20,6 @@ describe('UserModel', () => {
           name: 'Fulano',
           username: 'fulano',
           emailAddress: 'fulano@gmail.com',
-          source: UserSources.JsonPlaceholder,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -38,7 +36,7 @@ describe('UserModel', () => {
 
       const emails = ['fulano@gmail.com'];
       const users = await userModel
-        .getByEmailsWithSource(emails, UserSources.JsonPlaceholder);
+        .getByEmailsWithSource(emails, 'xx');
 
       expect(users).toEqual(payload);
     });

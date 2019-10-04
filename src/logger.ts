@@ -1,13 +1,10 @@
-import * as BLogger from '@somosphi/logger';
+import { init } from '@somosphi/logger';
 
-const { AxiosLogger, ExpressLogger, Logger, RequestLogger } = BLogger.init({
-  PROJECT_NAME: 'ts-seed-backend',
-  OMIT_ROUTES: ['/status', '/info'],
-});
-
-export {
+export const {
   AxiosLogger,
   ExpressLogger,
   Logger,
-  RequestLogger,
-};
+} = init({
+  PROJECT_NAME: 'infobip-middleware',
+  OMIT_ROUTES: ['/status', '/info'],
+});

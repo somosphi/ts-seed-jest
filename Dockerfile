@@ -1,4 +1,7 @@
-FROM keymetrics/pm2:latest-alpine
+FROM node:10-alpine
+
+# Install python to compile packages
+RUN apk add --no-cache python make g++
 
 RUN mkdir -p /opt/app/
 WORKDIR /opt/app/

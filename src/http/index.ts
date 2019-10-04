@@ -9,7 +9,7 @@ import { Container } from '../container';
 import { UserController } from './controllers/v1/user';
 import { Controller } from './controllers/controller';
 import { errorHandlerMiddleware } from './middlewares/errorHandler';
-import { NotFoundError } from '../errors';
+import { NotFound } from '../errors';
 import { HttpServerConfig } from '../types';
 
 export class HttpServer {
@@ -78,7 +78,7 @@ export class HttpServer {
     });
 
     app.use('*', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-      next(new NotFoundError());
+      next(new NotFound('Page not found'));
     });
 
     app.use(errorHandlerMiddleware);

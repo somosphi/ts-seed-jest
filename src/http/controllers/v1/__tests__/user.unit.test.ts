@@ -1,15 +1,16 @@
-jest.mock('../../middlewares/errorHandler');
+jest.mock('../../../middlewares/errorHandler');
 
+import * as Knex from 'knex';
 import { Request } from 'jest-express/lib/request';
 import { Response } from 'jest-express/lib/response';
-import { Container } from '../../../container';
-import database from '../../../helpers/database';
 import { UserController } from '../user';
-import { errorHandlerMiddleware } from '../../middlewares/errorHandler';
+import { Container } from '../../../../container';
+import { errorHandlerMiddleware } from '../../../middlewares/errorHandler';
+import database from '../../../../helpers/database';
 
 describe('User controller', () => {
   const container = new Container({
-    mysqlDatabase: database,
+    mysqlDatabase: database('mysql') as Knex<any, any[]>,
   });
   const controller = new UserController(container);
 

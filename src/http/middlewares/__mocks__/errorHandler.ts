@@ -1,28 +1,40 @@
 import { Request, Response } from 'express';
-import { ResourceNotFoundError, CodedError, NotFoundError } from '../../../errors';
-import { logger } from '../../../logger';
+import {
+  BadRequest,
+  Unauthorized,
+  NotFound,
+  CustomError,
+  InternalServerError,
+  Conflict,
+} from '../../../errors';
 
 export const errorHandlerMiddleware = (req: Request, res: Response) =>
   (err: any, request: Request, response: Response): Response => {
-    if (err instanceof CodedError) {
-      logger.warn(err);
-    } else {
-      logger.error(err);
+    let status = 500;
+    let throwErr = err;
+
+    if (throwErr instanceof BadRequest) {
+      status = 400;
     }
 
-    if (err instanceof NotFoundError || err instanceof ResourceNotFoundError) {
-      return res.status(404).send(err);
+    if (throwErr instanceof Unauthorized) {
+      status = 400;
+    }
+
+    if (err instanceof NotFound) {
+      status = 404;
     }
 
     if (err.code && err.code === 'ER_DUP_ENTRY') {
-      return res.status(409).send({
-        code: 'DUPLICATED_RESOURCE',
-        message: 'Already exists resource with received unique keys',
-      });
+      status = 409;
+      throwErr = new Conflict('Already exists resource with received unique keys');
     }
 
-    return res.status(500).send({
-      code: 'UNEXPECTED_ERROR',
-      message: 'Internal server failure',
-    });
+    if (!(throwErr instanceof CustomError)) {
+      throwErr = new InternalServerError(throwErr.message);
+    }
+
+    return res
+      .status(status)
+      .send(throwErr.toJSON());
   };

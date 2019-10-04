@@ -1,19 +1,19 @@
 import { curryN } from 'ramda';
-import joi from 'joi';
+import { Schema } from '@hapi/joi';
 import { Request, Response, NextFunction } from 'express';
-import { ValidationError } from '../../errors';
+import { BadRequest } from '../../errors';
 
 export const validatorMiddleware = curryN(
   4,
-  (schema: joi.Schema, req: Request, res: Response, next: NextFunction) => {
-    const validation = joi.validate(req, schema, {
+  (schema: Schema, req: Request, res: Response, next: NextFunction) => {
+    const validation = schema.validate(req, {
       abortEarly: false,
       stripUnknown: true,
       allowUnknown: true,
     });
 
     if (validation.error) {
-      return next(new ValidationError(validation.error.details));
+      return next(new BadRequest('Invalid request params', validation.error.details));
     }
 
     Object.assign(req, validation.value);

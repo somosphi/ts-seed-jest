@@ -1,8 +1,12 @@
-import { UserModel } from './models/user';
+import {
+  ContainerConfig,
+  ServiceContext,
+  IContainer,
+} from '../types/containers';
 import { UserService } from './services/user';
-import { ContainerConfig, ServiceContext } from '../types';
+import { UserModel } from './models/user';
 
-export class Container {
+export class Container implements IContainer {
   readonly userService: UserService;
 
   constructor (config: ContainerConfig) {

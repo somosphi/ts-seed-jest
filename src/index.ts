@@ -6,7 +6,13 @@ import { Application } from './app';
 import { AppConfig } from './types';
 
 const appConfig: AppConfig = R.pick(
-  ['apmServiceName', 'apmServiceUrl', 'httpPort', 'httpBodyLimit'],
+  [
+    'apmServiceName',
+    'apmServiceUrl',
+    'httpPort',
+    'httpBodyLimit',
+    'dbConnector',
+  ],
   env,
 );
 

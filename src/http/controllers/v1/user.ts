@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { Controller } from '../controller';
 import { Container } from '../../../container';
 import { UserService } from '../../../container/services/user';
-import { findUserSchema } from '../../schemas/user';
+import { findUserSchema } from '../../schemas/v1/user';
 import { validatorMiddleware } from '../../middlewares/validator';
 
 export class UserController extends Controller {
