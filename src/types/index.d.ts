@@ -17,6 +17,14 @@ interface Env {
   readonly httpBodyLimit: string;
   readonly dbConnector: string;
   readonly userServiceHelper?: string;
+  readonly dbPort: number;
+  readonly dbHost: string;
+  readonly dbUsername?: string;
+  readonly dbPassword?: string;
+  readonly dbDatabase?: string;
+  readonly dbPoolMin: number;
+  readonly dbPoolMax: number;
+  readonly dbDebug: boolean;
 }
 
 interface ICodedError {
