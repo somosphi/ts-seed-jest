@@ -1,6 +1,6 @@
 import knex from 'knex';
 
-const knexfile = require('../../knexfile');
+import knexfile from '../../knexfile';
 
 export default function database(connector = 'mysql') {
   switch (connector) {
