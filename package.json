@@ -32,7 +32,7 @@
     "elastic-apm-node": "^3.0.0",
     "express": "^4.17.1",
     "helmet": "^3.18.0",
-    "knex": "^0.18.3",
+    "knex": "^0.19.5",
     "moment-timezone": "^0.5.25",
     "mongoose": "^5.6.12",
     "mysql2": "^1.6.5",
