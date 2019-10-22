@@ -10,7 +10,8 @@
     "test": "jest --runInBand \\.test\\.ts",
     "test:unit": "jest --runInBand \\.unit\\.test\\.ts",
     "cover": "jest --coverage",
-    "lint": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'"
+    "lint": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'",
+    "migrate:up": "./node_modules/knex/bin/cli.js migrate:latest --env local"
   },
   "author": "Ariel Ril",
   "license": "MIT",
