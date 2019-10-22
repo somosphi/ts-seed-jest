@@ -12,6 +12,7 @@
   "exclude": [
     "node_modules",
     "**/__tests__/**/*",
-    "**/__mocks__/**/*"
+    "**/__mocks__/**/*",
+    "src/helpers/jest.ts"
   ]
 }

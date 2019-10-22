@@ -8,9 +8,9 @@ WORKDIR /opt/app/
 
 COPY . .
 
-RUN npm install
+RUN npm install --only=production
 RUN npm run build
 
-EXPOSE 3000
+EXPOSE ${SERVICEPORT}
 
-CMD npm start
+CMD npm run migrate:up && npm start
