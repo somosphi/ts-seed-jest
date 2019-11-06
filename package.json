@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@4alltecnologia/http-errors": "^1.1.0",
-    "@hapi/joi": "^15.1.0",
+    "@hapi/joi": "^16.1.7",
     "@somosphi/logger": "^1.2.10",
     "@types/body-parser": "^1.17.0",
     "@types/compression": "1.0.1",
