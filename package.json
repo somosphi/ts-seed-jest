@@ -43,7 +43,7 @@
     "knex": "^0.19.5",
     "moment-timezone": "^0.5.25",
     "ts-node": "^8.5.0",
-    "mysql2": "^1.6.5",
+    "mysql2": "^2.0.0",
     "ramda": "^0.26.1",
     "typescript": "^3.6.2"
   },
