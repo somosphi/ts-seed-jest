@@ -58,6 +58,6 @@
     "ts-jest": "^24.0.2",
     "tslint": "^5.20.1",
     "tslint-config-airbnb": "^5.11.1",
-    "typescript-tslint-plugin": "^0.5.4"
+    "typescript-tslint-plugin": "^0.5.5"
   }
 }
