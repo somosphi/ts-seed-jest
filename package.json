@@ -45,7 +45,7 @@
     "ts-node": "^8.5.0",
     "mysql2": "^2.0.0",
     "ramda": "^0.26.1",
-    "typescript": "^3.6.2"
+    "typescript": "^3.7.2"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
