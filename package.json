@@ -55,7 +55,7 @@
     "jest-express": "^1.10.1",
     "nock": "^11.7.0",
     "sinon": "^7.3.2",
-    "ts-jest": "^24.0.2",
+    "ts-jest": "^24.2.0",
     "tslint": "^5.20.1",
     "tslint-config-airbnb": "^5.11.1",
     "typescript-tslint-plugin": "^0.5.5"
