@@ -4,6 +4,13 @@
     "tslint-config-airbnb"
   ],
   "rules": {
+    "align": [
+      true,
+      "elements",
+      "members",
+      "parameters",
+      "statements"
+    ],
     "variable-name": false,
     "ordered-imports": false,
     "no-var-requires": false,

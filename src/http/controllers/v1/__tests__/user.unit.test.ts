@@ -10,7 +10,7 @@ import database from '../../../../helpers/database';
 
 describe('User controller', () => {
   const container = new Container({
-    mysqlDatabase: database('mysql') as Knex<any, any[]>,
+    mysqlDatabase: database() as Knex<any, any[]>,
   });
   const controller = new UserController(container);
 

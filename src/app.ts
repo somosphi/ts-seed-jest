@@ -12,7 +12,7 @@ export class Application {
   private httpServer?: HttpServer;
   private worker?: Worker;
 
-  constructor (config: AppConfig) {
+  constructor(config: AppConfig) {
     this.config = config;
   }
 
@@ -39,7 +39,7 @@ export class Application {
     } = this.config;
 
     const container = new Container({
-      mysqlDatabase: database('mysql') as Knex<any, any[]>,
+      mysqlDatabase: database() as Knex<any, any[]>,
     });
 
     if (apmServiceName && apmServerUrl) {
