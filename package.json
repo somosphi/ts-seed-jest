@@ -13,11 +13,11 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'",
     "migrate:up": "./node_modules/knex/bin/cli.js migrate:latest --env local"
   },
-  "author": "Ariel Ril",
+  "author": "Somosphi",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/arielril/ts-seed-backend"
+    "url": "https://github.com/somosphi/ts-seed-jest"
   },
   "dependencies": {
     "@4alltecnologia/http-errors": "^1.1.0",

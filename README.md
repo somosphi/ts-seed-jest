@@ -1,7 +1,9 @@
-# node-ts-seed
+# Typescript Seed Backend
 
 ## Description
-This is a project totally based in [this project](https://github.com/4alltecnologia/node-ts-seed). I made some changes to use jest, ramda and other packages that I prefer.
+This is a template repository to serve as seed for new projects developed @somosphi. This repo uses Typescript as development language, Jest as test framework and other main packages.
+
+**Obs**: This project is developed based in [this repo](https://github.com/somosphi/node-ts-seed).
 
 ### Installing and testing the app
 
