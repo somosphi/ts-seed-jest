@@ -4,6 +4,7 @@ import { AnySchema } from '@hapi/joi';
 
 import { UserModel } from '../container/models/user';
 import { IUserService, IUserModel } from './User';
+import { Options } from 'amqplib';
 
 declare global {
   namespace jest {
@@ -38,6 +39,12 @@ type Env = {
   readonly dbPoolMin: number;
   readonly dbPoolMax: number;
   readonly dbDebug: boolean;
+  readonly rabbitMqHost: string;
+  readonly rabbitMqProtocol: string;
+  readonly rabbitMqPort: number;
+  readonly rabbitMqUsername: string;
+  readonly rabbitMqPassword: string;
+  readonly rabbitMqReconnectTimeout: number;
 };
 
 export type AppConfig =
@@ -79,3 +86,26 @@ export type UpdateParams<T> = {
     [K in keyof T]: T[K];
   }>;
 };
+
+type AmqpConfig = {
+  host: Env['rabbitMqHost'];
+  protocol: Env['rabbitMqProtocol'];
+  port: Env['rabbitMqPort'];
+  username: Env['rabbitMqUsername'];
+  password: Env['rabbitMqPassword'];
+  reconnectTimeout: Env['rabbitMqReconnectTimeout'];
+};
+
+export type AmqpIntegrationConfig = {
+  vhost: string;
+  config: AmqpConfig;
+};
+
+export type Exchange = string;
+export type RoutingKey = string;
+export type QueueMessage = string;
+
+interface IRabbitMq {
+  init(): Promise<void>;
+  send(ex: Exchange, rk: RoutingKey, msg: QueueMessage, additional: Options.Publish): void;
+}

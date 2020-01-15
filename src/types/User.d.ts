@@ -1,6 +1,7 @@
-import { MySQLTransaction } from '.';
+import { MySQLTransaction, Exchange, RoutingKey, QueueMessage } from '.';
 import { MySQLModel } from '../container/models/mysql';
 import { Request, Response, NextFunction } from 'express';
+import { RabbitMQ } from '../container/integrations/rabbit';
 
 export type User = {
   id: string;
@@ -23,4 +24,14 @@ export interface IUserService {
 export interface IUserController {
   list(req: Request, res: Response, next: NextFunction): void;
   find(req: Request, res: Response, next: NextFunction): void;
+}
+
+export type UserIntegrationAmqpConfig = {
+  exchange: Exchange;
+  routingKey: RoutingKey;
+  vhost: RabbitMQ;
+};
+
+export interface IUserProducer {
+  send(msg: QueueMessage): void;
 }
