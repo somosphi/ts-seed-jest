@@ -1,4 +1,4 @@
-FROM node:10-alpine
+FROM keymetrics/pm2:latest-alpine
 
 # Install python to compile packages
 RUN apk add --no-cache python make g++
@@ -8,7 +8,7 @@ WORKDIR /opt/app/
 
 COPY . .
 
-RUN npm install --only=production
+RUN npm install --production
 RUN npm run build
 
 EXPOSE ${SERVICEPORT}

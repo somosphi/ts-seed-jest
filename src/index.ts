@@ -1,8 +1,12 @@
+import { start as ElasticStart } from './helpers/elasticApm';
+ElasticStart();
+
 import * as R from 'ramda';
 
 import { Logger as logger } from './logger';
 import { env } from './env';
 import { Application } from './app';
+
 import { AppConfig } from './types';
 
 const appConfig: AppConfig = R.pick(

@@ -1,14 +1,17 @@
 import { Router, Request, Response, NextFunction } from 'express';
+
 import { Controller } from '../controller';
 import { Container } from '../../../container';
-import { UserService } from '../../../container/services/user';
 import { findUserSchema } from '../../schemas/v1/user';
 import { validatorMiddleware } from '../../middlewares/validator';
 
-export class UserController extends Controller {
-  protected userService: UserService;
+import { IContainer } from '../../../types';
+import { IUserController } from '../../../types/User';
 
-  constructor (container: Container) {
+export class UserController extends Controller implements IUserController {
+  protected userService: IContainer['userService'];
+
+  constructor(container: Container) {
     super();
     this.userService = container.userService;
   }

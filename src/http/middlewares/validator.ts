@@ -1,6 +1,7 @@
 import { curryN } from 'ramda';
 import { Schema } from '@hapi/joi';
 import { Request, Response, NextFunction } from 'express';
+
 import { BadRequest } from '../../errors';
 
 export const validatorMiddleware = curryN(

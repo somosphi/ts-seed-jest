@@ -1,6 +1,7 @@
 import { UserModel } from '../user';
 import sinon from 'sinon';
-import { User } from '../../../types/containers/services/User';
+
+import { User } from '../../../types/User';
 
 describe('UserModel', () => {
 
@@ -26,7 +27,10 @@ describe('UserModel', () => {
       ];
 
       // @ts-ignore
-      const userModel = new UserModel();
+      const userModel = new UserModel(() => ({
+        where: jest.fn().mockReturnValue(payload),
+        whereIn: jest.fn().mockReturnThis(),
+      }));
       const sourceQuery = sinon.fake.resolves(payload);
       const emailsQuery = sinon.fake.returns({ where: sourceQuery });
 

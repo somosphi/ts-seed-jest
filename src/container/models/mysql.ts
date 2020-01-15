@@ -1,48 +1,109 @@
-import knex, { QueryBuilder, Transaction } from 'knex';
+import * as R from 'ramda';
+import { Model } from './model';
 
-export abstract class MySQLModel<T> {
-  protected readonly database: knex;
-  protected abstract getTableName(): string;
+import {
+  MySQLTransaction,
+  Database,
+  QueryBuilder,
+  UpdateParams,
+} from '../../types';
 
-  constructor (database: knex) {
+export abstract class MySQLModel<T> extends Model<T> {
+  protected readonly database: Database;
+
+  constructor(database: Database) {
+    super();
     this.database = database;
   }
 
-  protected transactionable(trx?: Transaction): QueryBuilder {
-    if (trx) {
-      return this.table.transacting(trx);
-    }
-    return this.table;
-  }
-
-  protected get table(): QueryBuilder {
+  /**
+   * Gets an instance of the database connection with the right schema
+   */
+  get db() {
     return this.database(this.getTableName());
   }
 
-  get transaction() {
-    return this.database.transaction;
+  /**
+   * Creates a raw sql to use in a query
+   * @param args Arguments to create the raw sql
+   */
+  raw(...args: any) {
+    return this.database.raw(args);
   }
 
-  async create(data: Object, trx?: Transaction): Promise<string> {
-    const [createdId] = await this.transactionable(trx).insert(data);
-    return createdId.toString();
+  /**
+   * Format a object to use inside the database
+   * @param data Object to be formatted to the database format
+   */
+  protected abstract toDatabase(data: Partial<T>): object;
+
+  /**
+   * Format a record from the database to the format used inside the API service
+   * @param record Transform a record from the database to be used inside the API service
+   */
+  protected abstract fromDatabase(record: object): Partial<T>;
+
+  /**
+   * Get database connection with the right schema, using or not a transaction
+   * @param trx Transaction object
+   */
+  protected table(trx?: MySQLTransaction): QueryBuilder {
+    const table = this.db;
+    return trx ? table.transacting(trx) : table;
   }
 
-  async all(trx?: Transaction): Promise<T[]> {
-    return await this.transactionable(trx);
+  /**
+   * Insert the data in the database
+   * @param data Data to insert in the database
+   * @param trx Transaction object
+   */
+  async create(data: Partial<T>, trx?: MySQLTransaction): Promise<any> {
+    return this.table(trx)
+      .insert(this.toDatabase(data));
   }
 
-  async getById(id: string, trx?: Transaction): Promise<T | null> {
-    return await this.transactionable(trx).where('id', id).first();
+  /**
+   * Selects some information from the database
+   * @param params.filters Filters for the select
+   * @param trx Transaction object
+   */
+  async get(
+    params: Pick<UpdateParams<T>, 'filters'>,
+    trx?: MySQLTransaction,
+  ): Promise<T[]> {
+    return this.table(trx)
+      .where(this.toDatabase(params.filters));
   }
 
-  async deleteById(id: string, trx?: Transaction): Promise<boolean> {
-    const result = await this.transactionable(trx).where('id', id).delete();
-    return result > 0;
+  /**
+   * Updates the database with the given filters and data
+   * @param params.filters Filters for the update
+   * @param params.data Data to be used in the update
+   * @param trx Transaction object
+   */
+  async update(params: UpdateParams<T>, trx?: MySQLTransaction): Promise<boolean> {
+    return this.table(trx)
+      .where(this.toDatabase(params.filters))
+      .update(this.toDatabase(params.data));
   }
 
-  async updateById(id: string, data: Object, trx?: Transaction): Promise<boolean> {
-    const result = await this.transactionable(trx).where('id', id).update(data);
-    return result > 0;
+  /**
+   * Delete a value from the database with the provided key
+   * @param params.filters The filters for the deletion
+   * @param trx Mysql Transaction object
+   */
+  async del(
+    params: Pick<UpdateParams<T>, 'filters'>,
+    trx?: MySQLTransaction,
+  ): Promise<boolean> {
+    const __filters__ = R.prop('filters', params);
+
+    if (R.isEmpty(__filters__)) {
+      return Promise.resolve(false);
+    }
+
+    return this.table(trx)
+      .where(this.toDatabase(__filters__))
+      .del();
   }
 }

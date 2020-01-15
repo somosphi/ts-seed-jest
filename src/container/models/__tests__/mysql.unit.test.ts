@@ -1,20 +1,23 @@
 import { Transaction } from 'knex';
 import sinon from 'sinon';
+
 import { MySQLModel } from '../mysql';
 
 class TestModel extends MySQLModel<any> {
-  static tableName: 'test';
-
-  get table() {
-    return super.table;
+  protected toDatabase(data: Partial<any>): object {
+    return {};
   }
+  protected fromDatabase(record: object): Partial<any> {
+    return {};
+  }
+  static tableName: 'test';
 
   getTableName(): string {
     return TestModel.tableName;
   }
 
   transactionable(trx: Transaction) {
-    return super.transactionable(trx);
+    return super.table(trx);
   }
 }
 
@@ -34,8 +37,7 @@ describe('MySQLModel', () => {
 
       // @ts-ignore
       const testModel = new TestModel(databaseQuery);
-      testModel.table;
-
+      expect(testModel).toBeDefined();
     });
   });
 
@@ -50,7 +52,7 @@ describe('MySQLModel', () => {
       // @ts-ignore
       const testModel = new TestModel(databaseQuery);
 
-      const transactionableResult = testModel.transactionable({});
+      const transactionableResult = testModel.table({});
 
       expect(transactionableResult).toEqual({});
     });
@@ -61,7 +63,7 @@ describe('MySQLModel', () => {
       // @ts-ignore
       const testModel = new TestModel(databaseQuery);
 
-      const transactionableResult = testModel.transactionable();
+      const transactionableResult = testModel.table();
 
       expect(transactionableResult).toEqual({});
     });
@@ -81,7 +83,7 @@ describe('MySQLModel', () => {
       const insertData = { message: 'Ola mundo' };
       const createdId = await testModel.create(insertData);
 
-      expect(createdId).toEqual('123');
+      expect(createdId).toEqual([123]);
     });
   });
 
@@ -91,11 +93,11 @@ describe('MySQLModel', () => {
         { message: 'Ola mundo' },
       ];
 
-      const databaseQuery = sinon.fake.resolves(payload);
-
       // @ts-ignore
-      const testModel = new TestModel(databaseQuery);
-      const result = await testModel.all();
+      const testModel = new TestModel(() => ({
+        where: jest.fn().mockReturnValue(payload),
+      }));
+      const result = await testModel.get({});
 
       expect(result).toEqual(payload);
     });

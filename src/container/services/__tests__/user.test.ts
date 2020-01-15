@@ -1,7 +1,9 @@
 import sinon from 'sinon';
+
 import { UserService } from '../user';
 import { BadRequest } from '../../../errors';
-import { User } from '../../../types/containers/services/User';
+
+import { User } from '../../../types/User';
 
 describe('UserService', () => {
 
@@ -29,7 +31,7 @@ describe('UserService', () => {
 
       const context = {
         userModel: {
-          getById: sinon.fake.resolves(payload),
+          get: sinon.fake.resolves([payload]),
         },
       };
 
@@ -45,7 +47,7 @@ describe('UserService', () => {
 
       const context = {
         userModel: {
-          getById: sinon.fake.resolves(payload),
+          get: sinon.fake.resolves([payload]),
         },
       };
 

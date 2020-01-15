@@ -4,11 +4,11 @@
   "description": "Typescript seed used to develop backend services",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "pm2-runtime start process.yaml",
     "dev": "nodemon --watch './src/**/*.ts' --exec 'ts-node' ./src/index.ts",
     "build": "rm -rf dist && tsc",
-    "test": "jest --runInBand \\.test\\.ts",
-    "test:unit": "jest --runInBand \\.unit\\.test\\.ts",
+    "test": "jest \\.test\\.ts",
+    "test:unit": "jest \\.unit\\.test\\.ts",
     "cover": "jest --coverage",
     "lint": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'",
     "migrate:up": "./node_modules/knex/bin/cli.js migrate:latest --env local"

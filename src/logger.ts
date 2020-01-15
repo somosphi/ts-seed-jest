@@ -5,6 +5,6 @@ export const {
   ExpressLogger,
   Logger,
 } = init({
-  PROJECT_NAME: 'infobip-middleware',
+  PROJECT_NAME: 'ts-seed-jest',
   OMIT_ROUTES: ['/status', '/info'],
 });

@@ -14,12 +14,14 @@
     ]
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*",
+    "./src/types/*"
   ],
   "exclude": [
     "node_modules",
     "**/__tests__/**/*",
     "**/__mocks__/**/*",
-    "src/helpers/jest.ts"
+    "src/helpers/jest.ts",
+    "src/helpers/testHelpers.ts"
   ]
 }

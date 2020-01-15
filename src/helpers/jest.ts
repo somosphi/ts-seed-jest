@@ -1,5 +1,9 @@
 import { AnySchema } from '@hapi/joi';
 
+import database from './database';
+
+const db = database();
+
 /**
  * Checks if the object matches the schema
  * @param received Object to be checked
@@ -25,3 +29,12 @@ function toMatchSchema(received: object, schema: AnySchema) {
 }
 
 expect.extend({ toMatchSchema });
+
+/**
+ * Destroy database after all tests
+ */
+afterAll(async () => {
+  if (db) {
+    await db.destroy();
+  }
+});
