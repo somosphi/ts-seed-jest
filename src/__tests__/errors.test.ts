@@ -4,7 +4,7 @@ import * as errors from '../errors';
 describe('CodedError', () => {
 
   class TestCodedError extends errors.CustomError {
-    constructor (message: string, details?: any[]) {
+    constructor(message: string, details?: any[]) {
       super('TEST', message, details);
     }
   }
@@ -21,8 +21,9 @@ describe('CodedError', () => {
 
 describe('DetailedCodedError', () => {
 
+  // tslint:disable-next-line: max-classes-per-file
   class TestDetailedCodedError extends errors.CustomError {
-    constructor (message: string, details?: any[]) {
+    constructor(message: string, details?: any[]) {
       super('TEST', message, details);
     }
   }

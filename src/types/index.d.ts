@@ -63,9 +63,9 @@ export type ServiceContext = {
   userModel: IUserModel;
 };
 
-export interface ContainerConfig {
+export type ContainerConfig = {
   mysqlDatabase: knex;
-}
+};
 
 export interface IController {
   register(router: Router): void;
