@@ -1,4 +1,4 @@
-import { AmqpIntegrationConfig, Exchange, RoutingKey, QueueMessage } from '../types';
+import { AmqpIntegrationConfig, Exchange, RoutingKey } from '../types';
 import { Options } from 'amqplib';
 
 export abstract class AmqpIntegration {
@@ -10,11 +10,15 @@ export abstract class AmqpIntegration {
     this.config = config;
   }
 
+  get vHostName() {
+    return this.vhost;
+  }
+
   abstract init(): Promise<void>;
   abstract send(
     ex: Exchange,
     rk: RoutingKey,
-    msg: QueueMessage,
+    msg: object,
     additional: Options.Publish,
   ): void;
 }

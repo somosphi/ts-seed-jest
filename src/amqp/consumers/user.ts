@@ -1,28 +1,64 @@
 import { Consumer } from './consumer';
+import { toJSON } from '../../helpers/conversion';
 
 import { AmqpChannel, AmqpMessage } from '../../types';
+import { Container } from '../../container';
 
 export class UserConsumer extends Consumer {
-  constructor({ container, config }: any) {
+  private userService: Container['userService'];
+
+  constructor({ container, config }: { container: Container; config: any; }) {
     super(container);
+
+    this.userService = container.userService;
   }
 
   async register(channel: AmqpChannel) {
     await channel.consume(
-      'user.find',
+      'tsseed.user.find',
       this.onConsume(channel, this.findUser.bind(this)),
     );
     await channel.consume(
-      'user.create',
+      'tsseed.user.create',
       this.onConsume(channel, this.createUser.bind(this)),
+    );
+    await channel.consume(
+      'tsseed.user.notify',
+      this.onConsume(channel, this.validateUser),
     );
   }
 
-  findUser(msg: AmqpMessage | null): void { return; }
+  async findUser(msg: AmqpMessage | null): Promise<void> {
+    if (!msg) return;
 
-  createUser(msg: AmqpMessage | null): void { return; }
+    const content = toJSON(msg?.content);
+    console.log('#find user content', content);
+
+    const user = await this.userService
+      // @ts-ignore
+      .findById(content?.id);
+
+    // send back the user
+    return this.userService.sendUserQueue(user);
+  }
+
+  async createUser(msg: AmqpMessage | null): Promise<void> {
+    if (!msg) return;
+
+    const content = toJSON(msg?.content) as object;
+    console.log('create user content', content);
+
+    const userId = await this.userService.create(content);
+    console.log('created user id', userId);
+  }
+
+  validateUser(msg: AmqpMessage | null): void {
+    console.log('validate user msg', msg);
+    console.log('content', toJSON(msg?.content));
+    return;
+  }
 
   onConsumeError(err: any, channel: AmqpChannel, msg: AmqpMessage): void {
-    throw new Error('Method not implemented.');
+    console.log('!#@!#!', err);
   }
 }

@@ -54,6 +54,7 @@ export class Application {
       R.pick([
         'rabbitMqHost', 'rabbitMqProtocol', 'rabbitMqPort',
         'rabbitMqUsername', 'rabbitMqPassword', 'rabbitMqReconnectTimeout',
+        'rabbitMqVhostHome',
       ]),
       RA.renameKeys({
         rabbitMqHost: 'host',
@@ -62,6 +63,7 @@ export class Application {
         rabbitMqUsername: 'username',
         rabbitMqPassword: 'password',
         rabbitMqReconnectTimeout: 'reconnectTimeout',
+        rabbitMqVhostHome: 'vhostHome',
       }) as (_: object) => AmqpServerConfig,
     );
     this.amqpServer = new AmqpServer(
@@ -83,6 +85,7 @@ export class Application {
   async start(): Promise<void> {
     const container = new Container({
       mysqlDatabase: database(),
+      vHostList: this.getAmqpServer().getVHostList(),
     });
 
     this.setupHttpServer(container);

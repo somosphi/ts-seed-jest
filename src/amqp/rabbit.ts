@@ -1,12 +1,12 @@
 import { Connection, Channel, connect, Options } from 'amqplib';
 
 import { AmqpIntegration } from './amqp';
-import { Logger as logger, Logger } from '../logger';
+import { Logger as logger } from '../logger';
 import { toBuffer } from '../helpers/conversion';
 
 import {
   AmqpIntegrationConfig, Exchange,
-  RoutingKey, QueueMessage, IRabbitMq, IConsumer,
+  RoutingKey, IRabbitMq,
 } from '../types';
 
 export abstract class RabbitMQ extends AmqpIntegration implements IRabbitMq {
@@ -68,7 +68,7 @@ export abstract class RabbitMQ extends AmqpIntegration implements IRabbitMq {
     }, this.config.reconnectTimeout);
   }
 
-  send(ex: Exchange, rk: RoutingKey, msg: QueueMessage, additional: Options.Publish) {
+  send(ex: Exchange, rk: RoutingKey, msg: object, additional: Options.Publish) {
     try {
       this.channel.publish(ex, rk, toBuffer(msg), additional);
     } catch (err) {

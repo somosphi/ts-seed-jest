@@ -1,17 +1,25 @@
+import * as R from 'ramda';
+
 import { BadRequest } from '../../errors';
 
-import { User, IUserService, IUserModel } from '../../types/User';
-import { ServiceContext } from '../../types';
+import { User, IUserModel, IUserProducer } from '../../types/User';
+import { ServiceContext, MySQLTransaction } from '../../types';
 
-export class UserService implements IUserService {
-  protected readonly userModel: IUserModel;
+export class UserService {
+  protected readonly userModel: ServiceContext['userModel'];
+  private readonly userProducer: ServiceContext['userProducer'];
 
   constructor(context: ServiceContext) {
     this.userModel = context.userModel;
+    this.userProducer = context.userProducer;
   }
 
   all(): Promise<User[]> {
     return this.userModel.all();
+  }
+
+  create(user: Partial<User>, trx?: MySQLTransaction): Promise<User['id']> {
+    return this.userModel.create(user);
   }
 
   async findById(id: string): Promise<User> {
@@ -24,5 +32,11 @@ export class UserService implements IUserService {
     }
 
     return user;
+  }
+
+  sendUserQueue(user: Partial<User>): void {
+    return this.userProducer.send(
+      R.omit(['createdAt', 'updatedAt'], user),
+    );
   }
 }

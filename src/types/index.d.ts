@@ -3,8 +3,9 @@ import { Router } from 'express';
 import { AnySchema } from '@hapi/joi';
 
 import { UserModel } from '../container/models/user';
-import { IUserService, IUserModel } from './User';
+import { IUserModel, IUserProducer } from './User';
 import { Options, ConsumeMessage, Channel } from 'amqplib';
+import { UserService } from '../container/services/user';
 
 declare global {
   namespace jest {
@@ -39,12 +40,13 @@ type Env = {
   readonly dbPoolMin: number;
   readonly dbPoolMax: number;
   readonly dbDebug: boolean;
-  readonly rabbitMqHost: string;
-  readonly rabbitMqProtocol: string;
+  readonly rabbitMqHost?: string;
+  readonly rabbitMqProtocol?: string;
   readonly rabbitMqPort: number;
-  readonly rabbitMqUsername: string;
-  readonly rabbitMqPassword: string;
-  readonly rabbitMqReconnectTimeout: number;
+  readonly rabbitMqUsername?: string;
+  readonly rabbitMqPassword?: string;
+  readonly rabbitMqReconnectTimeout?: number;
+  readonly rabbitMqVhostHome: string;
 };
 
 export type AppConfig =
@@ -57,7 +59,8 @@ export type AppConfig =
     'rabbitMqPort' |
     'rabbitMqUsername' |
     'rabbitMqPassword' |
-    'rabbitMqReconnectTimeout'
+    'rabbitMqReconnectTimeout' |
+    'rabbitMqVhostHome'
   >;
 
 export type HttpServerConfig = {
@@ -73,15 +76,17 @@ interface ICodedError {
 
 export interface IContainer {
   readonly createTransaction: TransactionScope;
-  readonly userService: IUserService;
+  readonly userService: UserService;
 }
 
 export type ServiceContext = {
   userModel: IUserModel;
+  userProducer: IUserProducer;
 };
 
 export type ContainerConfig = {
   mysqlDatabase: knex;
+  vHostList: IRabbitMq[];
 };
 
 export interface IController {
@@ -104,6 +109,7 @@ type AmqpConfig = {
   username: Env['rabbitMqUsername'];
   password: Env['rabbitMqPassword'];
   reconnectTimeout: Env['rabbitMqReconnectTimeout'];
+  vhostHome: Env['rabbitMqVhostHome'];
 };
 
 export type AmqpIntegrationConfig = {
@@ -121,9 +127,19 @@ export type AmqpServerConfig = AmqpConfig;
 
 interface IRabbitMq {
   /**
+   * The vHost name
+   */
+  vHostName: string;
+
+  /**
    * Starts the RabbitMQ
    */
   startup(): Promise<void>;
+
+  /**
+   * Start all consumers
+   */
+  startConsumers(): Promise<void | void[]>;
 
   /**
    * Connects the service to RabbitMQ
@@ -137,11 +153,10 @@ interface IRabbitMq {
    * @param msg Message to send
    * @param additional Additional properties to use when publish
    */
-  send(ex: Exchange, rk: RoutingKey, msg: QueueMessage, additional: Options.Publish): void;
+  send(ex: Exchange, rk: RoutingKey, msg: object, additional: Options.Publish): void;
 }
 
-export interface IHomeVhost { }
-export type MsgHandler = (msg: AmqpMessage | null) => void;
+export type MsgHandler = (msg: AmqpMessage | null) => void | Promise<void>;
 
 interface IConsumer {
   /**
@@ -156,5 +171,5 @@ interface IConsumer {
    * Consumes a message
    * @param channel Channle
    */
-  onConsume(channel: Channel, msgHandler: MsgHandler): (message: ConsumeMessage | null) => void;
+  onConsume(channel: Channel, msgHandler: MsgHandler): (message: ConsumeMessage | null) => void | Promise<void>;
 }

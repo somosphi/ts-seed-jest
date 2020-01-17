@@ -2,15 +2,15 @@ import { RabbitMQ } from '../rabbit';
 import { Container } from '../../container';
 import { UserConsumer } from '../consumers/user';
 
-import { IHomeVhost, AmqpConfig, AmqpChannel } from '../../types';
+import { AmqpConfig } from '../../types';
 
-export class HomeVhost extends RabbitMQ implements IHomeVhost {
+export class HomeVhost extends RabbitMQ {
   private container: Container;
 
   constructor(container: Container, config: AmqpConfig) {
     super({
       config,
-      vhost: 'home',
+      vhost: config.vhostHome,
     });
     this.container = container;
   }

@@ -1,4 +1,5 @@
 import * as R from 'ramda';
+import { v4 as uuid } from 'uuid';
 
 import { MySQLModel } from './mysql';
 
@@ -7,7 +8,7 @@ import { MySQLTransaction } from '../../types';
 
 export class UserModel extends MySQLModel<User> implements IUserModel {
   getTableName(): string {
-    return 'users';
+    return 'user';
   }
 
   toDatabase = R.evolve({});
@@ -17,6 +18,12 @@ export class UserModel extends MySQLModel<User> implements IUserModel {
     return this.table(trx)
       .where({})
       .then(R.map(this.fromDatabase));
+  }
+
+  create(user: Partial<User>, trx?: MySQLTransaction): Promise<User['id']> {
+    const id = uuid();
+    return super.create(R.assoc('id', id, user), trx)
+      .then(() => id);
   }
 
   async getByEmailsWithSource(

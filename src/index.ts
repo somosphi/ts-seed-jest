@@ -19,6 +19,7 @@ const appConfig: AppConfig = R.pick(
     'rabbitMqUsername',
     'rabbitMqPassword',
     'rabbitMqReconnectTimeout',
+    'rabbitMqVhostHome',
   ],
   env,
 );

@@ -6,8 +6,8 @@ import {
   ContainerConfig,
   ServiceContext,
   IContainer,
-  Database,
 } from '../types';
+import { UserProducer } from './integrations/UserProducer';
 
 export class Container implements IContainer {
   readonly createTransaction: IContainer['createTransaction'];
@@ -16,15 +16,20 @@ export class Container implements IContainer {
   constructor(config: ContainerConfig) {
     const database = config.mysqlDatabase;
 
-    const serviceContext: ServiceContext = this.createServiceContext(database);
+    const serviceContext: ServiceContext = this
+      .createServiceContext(database, config.vHostList);
 
     this.userService = new UserService(serviceContext);
 
     this.createTransaction = database.transaction.bind(database);
   }
 
-  private createServiceContext = (db: Database) => ({
+  private createServiceContext = (
+    db: ContainerConfig['mysqlDatabase'],
+    vhost: ContainerConfig['vHostList'],
+  ) => ({
     userModel: new UserModel(db),
+    userProducer: new UserProducer({ vhost }),
     // tslint:disable-next-line: semicolon
   });
 }

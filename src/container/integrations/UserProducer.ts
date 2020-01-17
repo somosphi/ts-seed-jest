@@ -2,21 +2,25 @@ import { Options } from 'amqplib';
 
 import { Logger } from '../../logger';
 
-import { Exchange, RoutingKey, QueueMessage } from '../../types';
-import { UserIntegrationAmqpConfig, IUserProducer } from '../../types/User';
+import { Exchange, IRabbitMq } from '../../types';
+import { UserIntegrationAmqpConfig, IUserProducer, User } from '../../types/User';
+import { HomeVhost } from '../../amqp/vhost/home';
 
 export class UserProducer implements IUserProducer {
   private readonly exchange: Exchange;
-  private readonly routingKey: RoutingKey;
-  private vhost: UserIntegrationAmqpConfig['vhost'];
+  private vhost: IRabbitMq;
 
   constructor(config: UserIntegrationAmqpConfig) {
-    this.exchange = config.exchange;
-    this.routingKey = config.routingKey;
-    this.vhost = config.vhost;
+    this.exchange = 'tsseed.dx';
+    const vhost = config.vhost.find(v => v instanceof HomeVhost);
+
+    if (!vhost) throw new Error('No vHost found for UserProducer');
+
+    this.vhost = vhost;
   }
 
-  send(msg: QueueMessage) {
+  send(msg: Partial<Omit<User, 'createdAt' | 'updatedAt'>>) {
+    const rk = 'user.get';
     try {
       const pubOpts: Options.Publish = {
         priority: 0,
@@ -25,12 +29,12 @@ export class UserProducer implements IUserProducer {
         contentType: 'application/json',
       };
 
-      this.vhost.send(this.exchange, this.routingKey, msg, pubOpts);
+      this.vhost.send(this.exchange, rk, msg, pubOpts);
       Logger
-        .info(`Sending msg to exchange (${this.exchange}) and routing key (${this.routingKey})`);
+        .info(`Sending msg to exchange (${this.exchange}) and routing key (${rk})`);
     } catch (err) {
       Logger
-        .error(`Error sending message to exchange (${this.exchange}) and routing key (${this.routingKey}): ${err}`);
+        .error(`Error sending message to exchange (${this.exchange}) and routing key (${rk}): ${err}`);
     }
   }
 }

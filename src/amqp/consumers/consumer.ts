@@ -19,9 +19,9 @@ export abstract class Consumer implements IConsumer {
   ): void;
 
   onConsume = (channel: AmqpChannel, msgHandler: MsgHandler) => {
-    return (message: AmqpMessage | null): void => {
+    return async (message: AmqpMessage | null): Promise<void> => {
       try {
-        msgHandler(message);
+        await msgHandler(message);
       } catch (error) {
         this.onConsumeError(error, channel, message);
         Logger.error(error);
@@ -29,5 +29,6 @@ export abstract class Consumer implements IConsumer {
         if (message) channel.ack(message);
       }
     };
+    // tslint:disable-next-line: semicolon
   };
 }
