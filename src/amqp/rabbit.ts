@@ -1,17 +1,17 @@
 import { Connection, Channel, connect, Options } from 'amqplib';
 
 import { AmqpIntegration } from './amqp';
-import { Logger as logger } from '../../logger';
-import { toBuffer } from '../../helpers/conversion';
+import { Logger as logger, Logger } from '../logger';
+import { toBuffer } from '../helpers/conversion';
 
 import {
   AmqpIntegrationConfig, Exchange,
-  RoutingKey, QueueMessage, IRabbitMq,
-} from '../../types';
+  RoutingKey, QueueMessage, IRabbitMq, IConsumer,
+} from '../types';
 
-export class RabbitMQ extends AmqpIntegration implements IRabbitMq {
+export abstract class RabbitMQ extends AmqpIntegration implements IRabbitMq {
   private connection: Connection;
-  private channel: Channel;
+  protected channel: Channel;
 
   constructor(config: AmqpIntegrationConfig) {
     super(config);
@@ -32,12 +32,11 @@ export class RabbitMQ extends AmqpIntegration implements IRabbitMq {
     }
   }
 
-  send(ex: Exchange, rk: RoutingKey, msg: QueueMessage, additional: Options.Publish) {
-    try {
-      this.channel.publish(ex, rk, toBuffer(msg), additional);
-    } catch (err) {
-      throw new Error(`Error posting message to RabbitMQ server: ${err}`);
-    }
+  abstract startConsumers(): Promise<void | void[]>;
+
+  async startup(): Promise<void> {
+    await this.init();
+    await this.startConsumers();
   }
 
   private connectionConfig(): Options.Connect {
@@ -67,5 +66,13 @@ export class RabbitMQ extends AmqpIntegration implements IRabbitMq {
     setTimeout(() => {
       this.init();
     }, this.config.reconnectTimeout);
+  }
+
+  send(ex: Exchange, rk: RoutingKey, msg: QueueMessage, additional: Options.Publish) {
+    try {
+      this.channel.publish(ex, rk, toBuffer(msg), additional);
+    } catch (err) {
+      throw new Error(`Error posting message to RabbitMQ server: ${err}`);
+    }
   }
 }

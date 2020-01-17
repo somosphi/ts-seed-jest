@@ -1,7 +1,7 @@
 import { MySQLTransaction, Exchange, RoutingKey, QueueMessage } from '.';
 import { MySQLModel } from '../container/models/mysql';
 import { Request, Response, NextFunction } from 'express';
-import { RabbitMQ } from '../container/integrations/rabbit';
+import { RabbitMQ } from '../amqp/rabbit';
 
 export type User = {
   id: string;

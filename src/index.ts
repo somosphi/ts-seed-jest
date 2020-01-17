@@ -11,11 +11,14 @@ import { AppConfig } from './types';
 
 const appConfig: AppConfig = R.pick(
   [
-    'apmServiceName',
-    'apmServiceUrl',
     'httpPort',
     'httpBodyLimit',
-    'dbConnector',
+    'rabbitMqHost',
+    'rabbitMqProtocol',
+    'rabbitMqPort',
+    'rabbitMqUsername',
+    'rabbitMqPassword',
+    'rabbitMqReconnectTimeout',
   ],
   env,
 );

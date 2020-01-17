@@ -1,41 +1,93 @@
-import { HttpServer } from './http';
+import * as R from 'ramda';
+import * as RA from 'ramda-adjunct';
+
+import { AmqpServer } from './amqp';
 import { Container } from './container';
 import { Logger as logger } from './logger';
 import database from './helpers/database';
+import { HttpServer } from './http';
 
-import { AppConfig } from './types';
+import {
+  AppConfig, HttpServerConfig,
+  AmqpServerConfig,
+} from './types';
 
 export class Application {
   private readonly config: AppConfig;
   private httpServer?: HttpServer;
+  private amqpServer?: AmqpServer;
 
   constructor(config: AppConfig) {
     this.config = config;
   }
 
-  getHttpServer(): HttpServer {
+  private getHttpServer(): HttpServer {
     if (!this.httpServer) {
-      throw new Error('Failed to start server');
+      throw new Error('Failed to start HTTP server');
     }
     return this.httpServer;
   }
 
-  async start(): Promise<void> {
-    const {
-      httpPort,
-      httpBodyLimit,
-    } = this.config;
+  private getAmqpServer(): AmqpServer {
+    if (!this.amqpServer) {
+      throw new Error('Failed to start AMQP server');
+    }
+    return this.amqpServer;
+  }
 
+  private setupHttpServer(container: Container): void {
+    const getServerConfig = R.pipe(
+      R.pick(['httpPort', 'httpBodyLimit']),
+      RA.renameKeys({
+        httpPort: 'port',
+        httpBodyLimit: 'bodyLimit',
+      }) as (_: object) => HttpServerConfig,
+    );
+    this.httpServer = new HttpServer(
+      container,
+      getServerConfig(this.config),
+    );
+  }
+
+  private setupAmqpServer(container: Container): void {
+    const getConfig = R.pipe(
+      R.pick([
+        'rabbitMqHost', 'rabbitMqProtocol', 'rabbitMqPort',
+        'rabbitMqUsername', 'rabbitMqPassword', 'rabbitMqReconnectTimeout',
+      ]),
+      RA.renameKeys({
+        rabbitMqHost: 'host',
+        rabbitMqProtocol: 'protocol',
+        rabbitMqPort: 'port',
+        rabbitMqUsername: 'username',
+        rabbitMqPassword: 'password',
+        rabbitMqReconnectTimeout: 'reconnectTimeout',
+      }) as (_: object) => AmqpServerConfig,
+    );
+    this.amqpServer = new AmqpServer(
+      container,
+      getConfig(this.config),
+    );
+  }
+
+  private async initServers(): Promise<void> {
+    const httpServer = this.getHttpServer();
+    httpServer.start();
+    logger.info(`HTTP server started in port ${httpServer.port}`);
+
+    const amqpServer = this.getAmqpServer();
+    await amqpServer.start();
+    logger.info('AMQP server started');
+  }
+
+  async start(): Promise<void> {
     const container = new Container({
       mysqlDatabase: database(),
     });
 
-    this.httpServer = new HttpServer(container, {
-      port: httpPort,
-      bodyLimit: httpBodyLimit,
-    });
+    this.setupHttpServer(container);
+    this.setupAmqpServer(container);
 
-    this.httpServer.start();
-    logger.info(`Http server started in port ${this.httpServer.port}`);
+    await this.initServers();
   }
 }

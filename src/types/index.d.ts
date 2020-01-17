@@ -4,7 +4,7 @@ import { AnySchema } from '@hapi/joi';
 
 import { UserModel } from '../container/models/user';
 import { IUserService, IUserModel } from './User';
-import { Options } from 'amqplib';
+import { Options, ConsumeMessage, Channel } from 'amqplib';
 
 declare global {
   namespace jest {
@@ -48,7 +48,17 @@ type Env = {
 };
 
 export type AppConfig =
-  Pick<Env, 'httpPort' | 'httpBodyLimit'>;
+  Pick<
+    Env,
+    'httpPort' |
+    'httpBodyLimit' |
+    'rabbitMqHost' |
+    'rabbitMqProtocol' |
+    'rabbitMqPort' |
+    'rabbitMqUsername' |
+    'rabbitMqPassword' |
+    'rabbitMqReconnectTimeout'
+  >;
 
 export type HttpServerConfig = {
   port: Env['httpPort'];
@@ -104,8 +114,47 @@ export type AmqpIntegrationConfig = {
 export type Exchange = string;
 export type RoutingKey = string;
 export type QueueMessage = string;
+export type QueueName = string;
+export type AmqpChannel = Channel;
+export type AmqpMessage = ConsumeMessage;
+export type AmqpServerConfig = AmqpConfig;
 
 interface IRabbitMq {
+  /**
+   * Starts the RabbitMQ
+   */
+  startup(): Promise<void>;
+
+  /**
+   * Connects the service to RabbitMQ
+   */
   init(): Promise<void>;
+
+  /**
+   * Sends a message to the configured exchange
+   * @param ex Exchange
+   * @param rk Routing Key
+   * @param msg Message to send
+   * @param additional Additional properties to use when publish
+   */
   send(ex: Exchange, rk: RoutingKey, msg: QueueMessage, additional: Options.Publish): void;
+}
+
+export interface IHomeVhost { }
+export type MsgHandler = (msg: AmqpMessage | null) => void;
+
+interface IConsumer {
+  /**
+   * Handles the error when receiving a message
+   * @param err Error
+   * @param channel Channel
+   * @param msg Message to consume
+   */
+  onConsumeError(err: any, channel: AmqpChannel, msg: AmqpMessage | null): void;
+
+  /**
+   * Consumes a message
+   * @param channel Channle
+   */
+  onConsume(channel: Channel, msgHandler: MsgHandler): (message: ConsumeMessage | null) => void;
 }

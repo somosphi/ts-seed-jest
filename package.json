@@ -45,6 +45,7 @@
     "moment-timezone": "^0.5.25",
     "mysql2": "^2.0.1",
     "ramda": "^0.26.1",
+    "ramda-adjunct": "^2.24.0",
     "ts-node": "^8.5.0",
     "typescript": "^3.7.2"
   },

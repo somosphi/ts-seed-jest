@@ -72,15 +72,19 @@ export class HttpServer {
       },
     );
 
-    this.loadControllers().forEach((controller) => {
-      const router = express.Router({ mergeParams: true });
-      controller.register(router);
-      app.use(router);
-    });
+    this.loadControllers()
+      .forEach((controller) => {
+        const router = express.Router({ mergeParams: true });
+        controller.register(router);
+        app.use(router);
+      });
 
-    app.use('*', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-      next(new NotFound('Page not found'));
-    });
+    app.use(
+      '*',
+      (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        next(new NotFound('Page not found'));
+      },
+    );
 
     app.use(errorHandlerMiddleware);
     app.listen(this.config.port);
