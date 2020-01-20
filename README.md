@@ -76,5 +76,6 @@ $ docker run --rm -it rabbitmq:3.8 rabbitmqctl set_user_tags my-username adminis
       6. Go back to the exchange list and select the `tsseed.fx` exchange to bind the fanout queues
          1. In the bind form, select `To queue` and add the name of the queue. For this fanout exchange you need to bind the `tsseed.user.notify` queue and add the `user.create` routing key
          2. Again, you need to bind the `tsseed.fx` exchange to the `tsseed.user.notify` queue and add the `user.get` routing key
-6. Add the environment variables to the `.env` file
-7. Run the server in development mode: `npm run dev`
+6. Run the MySQL migrations: `npm run migrate:up`
+7. Add the environment variables to the `.env` file
+8. Run the server in development mode: `npm run dev`
