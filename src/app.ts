@@ -98,7 +98,7 @@ export class Application {
   }
 
   /**
-   * Start all app
+   * Start the app
    */
   async start(): Promise<void> {
     this.setupAmqpServer();

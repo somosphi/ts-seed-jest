@@ -1,4 +1,4 @@
-import { MySQLTransaction, Exchange, RoutingKey, QueueMessage, IRabbitMq } from '.';
+import { MySQLTransaction, Exchange, RoutingKey, QueueMessage, IRabbitMq, IVhost } from '.';
 import { MySQLModel } from '../container/models/mysql';
 import { Request, Response, NextFunction } from 'express';
 import { RabbitMQ } from '../amqp/rabbit';
@@ -22,7 +22,7 @@ export interface IUserController {
 }
 
 export type UserIntegrationAmqpConfig = {
-  vhost: IRabbitMq[];
+  vhost: IVhost[];
 };
 
 export interface IUserProducer {

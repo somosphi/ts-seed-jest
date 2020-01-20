@@ -1,4 +1,4 @@
-import { Connection, Channel, connect, Options } from 'amqplib';
+import { connect, Options } from 'amqplib';
 
 import { AmqpIntegration } from './amqp';
 import { Logger as logger } from '../logger';
@@ -6,17 +6,18 @@ import { toBuffer } from '../helpers/conversion';
 
 import {
   AmqpIntegrationConfig, Exchange,
-  RoutingKey, IRabbitMq,
+  RoutingKey, IRabbitMq, AmqpChannel,
+  AmqpConnection, AmqpPublishOptions,
 } from '../types';
 
 export abstract class RabbitMQ extends AmqpIntegration implements IRabbitMq {
-  private connection: Connection;
-  protected channel: Channel;
+  private connection: AmqpConnection;
+  protected channel: AmqpChannel;
 
   constructor(config: AmqpIntegrationConfig) {
     super(config);
-    this.connection = null as unknown as Connection;
-    this.channel = null as unknown as Channel;
+    this.connection = null as unknown as AmqpConnection;
+    this.channel = null as unknown as AmqpChannel;
   }
 
   async init(): Promise<void> {
@@ -68,7 +69,7 @@ export abstract class RabbitMQ extends AmqpIntegration implements IRabbitMq {
     }, this.config.reconnectTimeout);
   }
 
-  send(ex: Exchange, rk: RoutingKey, msg: object, additional: Options.Publish) {
+  send(ex: Exchange, rk: RoutingKey, msg: object, additional: AmqpPublishOptions) {
     try {
       this.channel.publish(ex, rk, toBuffer(msg), additional);
     } catch (err) {

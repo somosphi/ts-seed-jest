@@ -19,7 +19,6 @@ export class HomeVhost extends RabbitMQ implements IVhost {
     return [
       new UserConsumer({
         container: this.container!,
-        config: this.config,
       }),
     ];
   }

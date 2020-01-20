@@ -1,40 +1,47 @@
-import { Options } from 'amqplib';
-
 import { Logger } from '../../logger';
-
-import { Exchange, IRabbitMq } from '../../types';
-import { UserIntegrationAmqpConfig, IUserProducer, User } from '../../types/User';
 import { HomeVhost } from '../../amqp/vhost/home';
 
+import { IVhost, ProducerQueueConfig } from '../../types';
+import { UserIntegrationAmqpConfig, IUserProducer, User } from '../../types/User';
+
 export class UserProducer implements IUserProducer {
-  private readonly exchange: Exchange;
-  private vhost: IRabbitMq;
+  private vhost: IVhost;
+  private readonly queueConfigs: ProducerQueueConfig;
 
   constructor(config: UserIntegrationAmqpConfig) {
-    this.exchange = 'tsseed.fx';
     const vhost = config.vhost.find(v => v instanceof HomeVhost);
 
     if (!vhost) throw new Error('No vHost found for UserProducer');
 
     this.vhost = vhost;
+    this.queueConfigs = this.getConfig();
+  }
+
+  private getConfig(): ProducerQueueConfig {
+    return {
+      findUser: {
+        exchange: 'tsseed.fx',
+        routingKey: 'user.get',
+        pubOpts: { persistent: true },
+      },
+      notifyUserCreation: {
+        exchange: 'tsseed.fx',
+        routingKey: 'user.create',
+      },
+    };
   }
 
   sendFindUser(msg: Partial<Omit<User, 'createdAt' | 'updatedAt'>>) {
-    const rk = 'user.get';
+    const configs = this.queueConfigs.findUser;
+    const rk = configs.routingKey;
+    const ex = configs.exchange;
     try {
-      const pubOpts: Options.Publish = {
-        priority: 0,
-        deliveryMode: 2,
-        contentEncoding: 'UTF-8',
-        contentType: 'application/json',
-      };
-
-      this.vhost.send(this.exchange, rk, msg, pubOpts);
+      this.vhost.send(ex, rk, msg, configs.pubOpts!);
       Logger
-        .info(`Sending msg to exchange (${this.exchange}) and routing key (${rk})`);
+        .info(`Sending msg to exchange (${ex}) and routing key (${rk})`);
     } catch (err) {
       Logger
-        .error(`Error sending message to exchange (${this.exchange}) and routing key (${rk}): ${err}`);
+        .error(`Error sending message to exchange (${ex}) and routing key (${rk}): ${err}`);
     }
   }
 }

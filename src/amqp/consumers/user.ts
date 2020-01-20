@@ -1,58 +1,70 @@
-import { Consumer } from './consumer';
-import { toJSON } from '../../helpers/conversion';
+import * as R from 'ramda';
+import joi from '@hapi/joi';
 
-import { AmqpChannel, AmqpMessage } from '../../types';
+import { Consumer } from './consumer';
 import { Container } from '../../container';
+import { applyHandlers } from '../middlewares/next';
+
+import { findUserSchema } from '../../http/schemas/v1/user';
+
+import { AmqpChannel, AmqpMessage, MsgHandler, AmqpParsedMessage } from '../../types';
+import { validatorMiddleware } from '../middlewares/validator';
+import { parseMessage } from '../middlewares/parseMessage';
+import { User } from '../../types/User';
 
 export class UserConsumer extends Consumer {
   private userService: Container['userService'];
 
-  constructor({ container, config }: { container: Container; config: any; }) {
+  constructor({ container }: { container: Container; }) {
     super(container);
 
     this.userService = container.userService;
   }
 
   async register(channel: AmqpChannel) {
-    await channel.consume(
+    channel.consume(
       'tsseed.user.find',
-      this.onConsume(channel, this.findUser.bind(this)),
+      this.onConsume(
+        channel,
+        applyHandlers([
+          parseMessage<User>(R.__ as unknown as AmqpMessage),
+          validatorMiddleware(findUserSchema),
+          this.findUser.bind(this),
+        ]) as MsgHandler,
+      ),
     );
-    await channel.consume(
+    channel.consume(
       'tsseed.user.create',
-      this.onConsume(channel, this.createUser.bind(this)),
-    );
-    await channel.consume(
-      'tsseed.user.notify',
-      this.onConsume(channel, this.validateUser.bind(this)),
+      this.onConsume(
+        channel,
+        applyHandlers([
+          parseMessage<User>(R.__ as unknown as AmqpMessage),
+          validatorMiddleware(joi.object({})),
+          this.createUser.bind(this),
+        ]) as MsgHandler,
+      ),
     );
   }
 
-  async findUser(msg: AmqpMessage | null): Promise<void> {
+  async findUser(msg: AmqpParsedMessage<User>): Promise<void> {
     if (!msg) return;
 
-    const content = toJSON(msg?.content);
+    const content = msg.content;
 
     const user = await this.userService
-      // @ts-ignore
-      .findById(content?.id);
+      .findById(content.id);
 
     // send back the user
     return this.userService.sendUserQueue(user);
   }
 
-  async createUser(msg: AmqpMessage | null): Promise<void> {
+  async createUser(msg: AmqpParsedMessage<User>): Promise<void> {
     if (!msg) return;
 
-    const content = toJSON(msg?.content) as object;
+    const content = msg.content;
 
-    await this.userService.create(content);
-  }
-
-  validateUser(msg: AmqpMessage | null): void {
-    console.log('validate user msg', msg);
-    console.log('content', toJSON(msg?.content));
-    return;
+    const i = await this.userService.create(content);
+    console.log('###@##', i);
   }
 
   onConsumeError(err: any, channel: AmqpChannel, msg: AmqpMessage): void {

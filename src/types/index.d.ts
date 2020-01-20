@@ -1,12 +1,13 @@
 import knex from 'knex';
 import { Router } from 'express';
 import { AnySchema } from '@hapi/joi';
+import { Options, ConsumeMessage, Channel, Connection } from 'amqplib';
 
 import { UserModel } from '../container/models/user';
-import { IUserModel, IUserProducer } from './User';
-import { Options, ConsumeMessage, Channel } from 'amqplib';
 import { UserService } from '../container/services/user';
 import { Container } from '../container';
+
+import { IUserModel, IUserProducer } from './User';
 
 declare global {
   namespace jest {
@@ -87,7 +88,7 @@ export type ServiceContext = {
 
 export type ContainerConfig = {
   mysqlDatabase: knex;
-  vHostList: IRabbitMq[];
+  vHostList: IVhost[];
 };
 
 export interface IController {
@@ -113,6 +114,12 @@ type AmqpConfig = {
   vhostHome: Env['rabbitMqVhostHome'];
 };
 
+export type AmqpParsedMessage<T> = {
+  fields: AmqpMessage['fields'];
+  properties: AmqpMessage['properties'];
+  content: T;
+};
+
 export type AmqpIntegrationConfig = {
   vhost: string;
   config: AmqpConfig;
@@ -123,8 +130,10 @@ export type RoutingKey = string;
 export type QueueMessage = string;
 export type QueueName = string;
 export type AmqpChannel = Channel;
+export type AmqpConnection = Connection;
 export type AmqpMessage = ConsumeMessage;
 export type AmqpServerConfig = AmqpConfig;
+export type AmqpPublishOptions = Options.Publish;
 
 interface IRabbitMq {
   /**
@@ -167,7 +176,7 @@ export interface IVhost extends IRabbitMq {
 
 export type MsgHandler = (msg: AmqpMessage | null) => void | Promise<void>;
 
-interface IConsumer {
+export interface IConsumer {
   /**
    * Handles the error when receiving a message
    * @param err Error
@@ -184,4 +193,18 @@ interface IConsumer {
     channel: Channel,
     msgHandler: MsgHandler,
   ): (message: ConsumeMessage | null) => void | Promise<void>;
+
+  /**
+   * Register a consumer in the channel
+   * @param ch AMQP channel
+   */
+  register(ch: AmqpChannel): Promise<void>;
 }
+
+export type ProducerQueueConfig = {
+  [K: string]: {
+    exchange: Exchange;
+    routingKey: RoutingKey;
+    pubOpts?: AmqpPublishOptions;
+  };
+};

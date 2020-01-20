@@ -18,7 +18,7 @@ export abstract class Consumer implements IConsumer {
     msg: AmqpMessage | null,
   ): void;
 
-  onConsume = (channel: AmqpChannel, msgHandler: MsgHandler) => {
+  onConsume = (channel: AmqpChannel, msgHandler: MsgHandler): MsgHandler => {
     return async (message: AmqpMessage | null): Promise<void> => {
       try {
         await msgHandler(message);
