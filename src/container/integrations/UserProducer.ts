@@ -44,4 +44,18 @@ export class UserProducer implements IUserProducer {
         .error(`Error sending message to exchange (${ex}) and routing key (${rk}): ${err}`);
     }
   }
+
+  sendUserCreated(msg: Partial<Omit<User, 'createdAt' | 'updatedAt'>>) {
+    const configs = this.queueConfigs.notifyUserCreation;
+    const rk = configs.routingKey;
+    const ex = configs.exchange;
+    try {
+      this.vhost.send(ex, rk, msg, configs.pubOpts!);
+      Logger
+        .info(`Sending msg to exchange (${ex}) and routing key (${rk})`);
+    } catch (err) {
+      Logger
+        .error(`Error sending message to exchange (${ex}) and routing key (${rk}): ${err}`);
+    }
+  }
 }

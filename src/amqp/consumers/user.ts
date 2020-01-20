@@ -1,15 +1,15 @@
 import * as R from 'ramda';
-import joi from '@hapi/joi';
 
 import { Consumer } from './consumer';
 import { Container } from '../../container';
-import { applyHandlers } from '../middlewares/next';
-
-import { findUserSchema } from '../../http/schemas/v1/user';
-
-import { AmqpChannel, AmqpMessage, MsgHandler, AmqpParsedMessage } from '../../types';
+import { findUserSchema, createUserSchema } from '../schemas/user';
 import { validatorMiddleware } from '../middlewares/validator';
 import { parseMessage } from '../middlewares/parseMessage';
+
+import {
+  AmqpChannel, AmqpMessage,
+  MsgHandler, AmqpParsedMessage,
+} from '../../types';
 import { User } from '../../types/User';
 
 export class UserConsumer extends Consumer {
@@ -26,22 +26,18 @@ export class UserConsumer extends Consumer {
       'tsseed.user.find',
       this.onConsume(
         channel,
-        applyHandlers([
-          parseMessage<User>(R.__ as unknown as AmqpMessage),
-          validatorMiddleware(findUserSchema),
-          this.findUser.bind(this),
-        ]) as MsgHandler,
+        parseMessage<User>(R.__ as unknown as AmqpMessage),
+        validatorMiddleware(findUserSchema),
+        this.findUser.bind(this) as MsgHandler,
       ),
     );
     channel.consume(
       'tsseed.user.create',
       this.onConsume(
         channel,
-        applyHandlers([
-          parseMessage<User>(R.__ as unknown as AmqpMessage),
-          validatorMiddleware(joi.object({})),
-          this.createUser.bind(this),
-        ]) as MsgHandler,
+        parseMessage<User>(R.__ as unknown as AmqpMessage),
+        validatorMiddleware(createUserSchema),
+        this.createUser.bind(this) as MsgHandler,
       ),
     );
   }
@@ -63,11 +59,11 @@ export class UserConsumer extends Consumer {
 
     const content = msg.content;
 
-    const i = await this.userService.create(content);
-    console.log('###@##', i);
+    const id = await this.userService.create(content);
+    const user = await this.userService.findById(id);
+
+    return this.userService.sendUserCreatedNotification(user);
   }
 
-  onConsumeError(err: any, channel: AmqpChannel, msg: AmqpMessage): void {
-    console.log('!#@!#!', err);
-  }
+  onConsumeError(err: any, channel: AmqpChannel, msg: AmqpMessage): void { return; }
 }

@@ -1,5 +1,7 @@
-import { AmqpIntegrationConfig, Exchange, RoutingKey } from '../types';
-import { Options } from 'amqplib';
+import {
+  AmqpIntegrationConfig, Exchange,
+  RoutingKey, AmqpPublishOptions,
+} from '../types';
 
 export abstract class AmqpIntegration {
   protected vhost: string;
@@ -19,6 +21,6 @@ export abstract class AmqpIntegration {
     ex: Exchange,
     rk: RoutingKey,
     msg: object,
-    additional: Options.Publish,
+    additional: AmqpPublishOptions,
   ): void;
 }

@@ -1,7 +1,12 @@
-import { MySQLTransaction, Exchange, RoutingKey, QueueMessage, IRabbitMq, IVhost } from '.';
-import { MySQLModel } from '../container/models/mysql';
 import { Request, Response, NextFunction } from 'express';
+
 import { RabbitMQ } from '../amqp/rabbit';
+import { MySQLModel } from '../container/models/mysql';
+
+import {
+  MySQLTransaction, Exchange, RoutingKey,
+  QueueMessage, IRabbitMq, IVhost,
+} from '.';
 
 export type User = {
   id: string;
@@ -13,12 +18,11 @@ export type User = {
 };
 
 export interface IUserModel extends MySQLModel<User> {
+  /**
+   * Get all users from the database
+   * @param trx Transaction object
+   */
   all(trx?: MySQLTransaction): Promise<User[]>;
-}
-
-export interface IUserController {
-  list(req: Request, res: Response, next: NextFunction): void;
-  find(req: Request, res: Response, next: NextFunction): void;
 }
 
 export type UserIntegrationAmqpConfig = {
@@ -26,5 +30,15 @@ export type UserIntegrationAmqpConfig = {
 };
 
 export interface IUserProducer {
+  /**
+   * Send a notification with the found user
+   * @param msg Message
+   */
   sendFindUser(msg: Partial<Omit<User, 'createdAt' | 'updatedAt'>>): void;
+
+  /**
+   * Send a notification with the created user
+   * @param msg Message
+   */
+  sendUserCreated(msg: Partial<Omit<User, 'createdAt' | 'updatedAt'>>): void;
 }

@@ -39,4 +39,8 @@ export class UserService {
       R.omit(['createdAt', 'updatedAt'], user),
     );
   }
+
+  sendUserCreatedNotification(user: Partial<User>): void {
+    return this.userProducer.sendUserCreated(user);
+  }
 }

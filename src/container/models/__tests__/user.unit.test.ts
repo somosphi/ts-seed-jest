@@ -6,10 +6,10 @@ import { User } from '../../../types/User';
 describe('UserModel', () => {
 
   describe('#getTableName', () => {
-    it('should use table "users"', () => {
+    it('should use table "user"', () => {
       // @ts-ignore
       const userModel = new UserModel();
-      expect(userModel.getTableName()).toEqual('users');
+      expect(userModel.getTableName()).toEqual('user');
     });
   });
 

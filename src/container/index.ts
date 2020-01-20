@@ -2,12 +2,13 @@ import { UserModel } from './models/user';
 
 import { UserService } from './services/user';
 
+import { UserProducer } from './integrations/UserProducer';
+
 import {
   ContainerConfig,
   ServiceContext,
   IContainer,
 } from '../types';
-import { UserProducer } from './integrations/UserProducer';
 
 export class Container implements IContainer {
   readonly createTransaction: IContainer['createTransaction'];

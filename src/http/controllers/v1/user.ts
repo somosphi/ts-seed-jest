@@ -6,9 +6,8 @@ import { findUserSchema } from '../../schemas/v1/user';
 import { validatorMiddleware } from '../../middlewares/validator';
 
 import { IContainer } from '../../../types';
-import { IUserController } from '../../../types/User';
 
-export class UserController extends Controller implements IUserController {
+export class UserController extends Controller {
   protected userService: IContainer['userService'];
 
   constructor(container: Container) {
@@ -28,6 +27,12 @@ export class UserController extends Controller implements IUserController {
     );
   }
 
+  /**
+   * List all users
+   * @param req
+   * @param res
+   * @param next
+   */
   async list(req: Request, res: Response, next: NextFunction) {
     try {
       const users = await this.userService.all();
@@ -37,6 +42,12 @@ export class UserController extends Controller implements IUserController {
     }
   }
 
+  /**
+   * Find a user by its ID
+   * @param req
+   * @param res
+   * @param next
+   */
   async find(req: Request, res: Response, next: NextFunction) {
     try {
       const user = await this.userService.findById(req.params.id);

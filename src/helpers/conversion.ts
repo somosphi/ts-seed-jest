@@ -11,6 +11,10 @@ export function toBuffer(v: string | object): Buffer {
   }
 }
 
+/**
+ * Converts a value to JSON
+ * @param v Value to convert
+ */
 export function toJSON(v?: Buffer | string): object | undefined {
   switch (typeof v) {
     case 'string': return JSON.parse(v);

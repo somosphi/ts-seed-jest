@@ -114,11 +114,7 @@ type AmqpConfig = {
   vhostHome: Env['rabbitMqVhostHome'];
 };
 
-export type AmqpParsedMessage<T> = {
-  fields: AmqpMessage['fields'];
-  properties: AmqpMessage['properties'];
-  content: T;
-};
+export type AmqpParsedMessage<T> = Record<'content', T | undefined> & AmqpMessage;
 
 export type AmqpIntegrationConfig = {
   vhost: string;

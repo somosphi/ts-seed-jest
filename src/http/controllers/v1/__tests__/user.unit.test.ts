@@ -7,10 +7,13 @@ import { UserController } from '../user';
 import { Container } from '../../../../container';
 import { errorHandlerMiddleware } from '../../../middlewares/errorHandler';
 import database from '../../../../helpers/database';
+import { HomeVhost } from '../../../../amqp/vhost/home';
+import { AmqpConfig } from '../../../../types';
 
 describe('User controller', () => {
   const container = new Container({
     mysqlDatabase: database(),
+    vHostList: [new HomeVhost({} as AmqpConfig)],
   });
   const controller = new UserController(container);
 

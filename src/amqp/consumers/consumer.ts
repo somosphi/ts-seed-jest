@@ -2,6 +2,7 @@ import { Container } from '../../container';
 import { Logger } from '../../logger';
 
 import { IConsumer, AmqpMessage, AmqpChannel, MsgHandler } from '../../types';
+import { applyHandlers, FuncHandler } from '../middlewares/handlers';
 
 export abstract class Consumer implements IConsumer {
   protected container: Container;
@@ -18,10 +19,11 @@ export abstract class Consumer implements IConsumer {
     msg: AmqpMessage | null,
   ): void;
 
-  onConsume = (channel: AmqpChannel, msgHandler: MsgHandler): MsgHandler => {
+  onConsume = (channel: AmqpChannel, ...msgHandler: FuncHandler[]): MsgHandler => {
     return async (message: AmqpMessage | null): Promise<void> => {
       try {
-        await msgHandler(message);
+        const handle = applyHandlers(msgHandler) as MsgHandler;
+        await handle(message);
       } catch (error) {
         this.onConsumeError(error, channel, message);
         Logger.error(error);
