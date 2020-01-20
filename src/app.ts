@@ -21,6 +21,9 @@ export class Application {
     this.config = config;
   }
 
+  /**
+   * Returns the HTTP server
+   */
   private getHttpServer(): HttpServer {
     if (!this.httpServer) {
       throw new Error('Failed to start HTTP server');
@@ -28,6 +31,9 @@ export class Application {
     return this.httpServer;
   }
 
+  /**
+   * Returns the AMQP server
+   */
   private getAmqpServer(): AmqpServer {
     if (!this.amqpServer) {
       throw new Error('Failed to start AMQP server');
@@ -35,6 +41,10 @@ export class Application {
     return this.amqpServer;
   }
 
+  /**
+   * Creates an instance of the HTTP server
+   * @param container Container
+   */
   private setupHttpServer(container: Container): void {
     const getServerConfig = R.pipe(
       R.pick(['httpPort', 'httpBodyLimit']),
@@ -49,7 +59,10 @@ export class Application {
     );
   }
 
-  private setupAmqpServer(container: Container): void {
+  /**
+   * Creates an instance of the AMQP Server
+   */
+  private setupAmqpServer(): void {
     const getConfig = R.pipe(
       R.pick([
         'rabbitMqHost', 'rabbitMqProtocol', 'rabbitMqPort',
@@ -67,11 +80,13 @@ export class Application {
       }) as (_: object) => AmqpServerConfig,
     );
     this.amqpServer = new AmqpServer(
-      container,
       getConfig(this.config),
     );
   }
 
+  /**
+   * Start all servers
+   */
   private async initServers(): Promise<void> {
     const httpServer = this.getHttpServer();
     httpServer.start();
@@ -82,14 +97,19 @@ export class Application {
     logger.info('AMQP server started');
   }
 
+  /**
+   * Start all app
+   */
   async start(): Promise<void> {
+    this.setupAmqpServer();
+
     const container = new Container({
       mysqlDatabase: database(),
       vHostList: this.getAmqpServer().getVHostList(),
     });
 
+    this.amqpServer?.setContainer(container);
     this.setupHttpServer(container);
-    this.setupAmqpServer(container);
 
     await this.initServers();
   }

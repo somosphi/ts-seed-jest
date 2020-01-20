@@ -24,7 +24,7 @@ export class UserConsumer extends Consumer {
     );
     await channel.consume(
       'tsseed.user.notify',
-      this.onConsume(channel, this.validateUser),
+      this.onConsume(channel, this.validateUser.bind(this)),
     );
   }
 
@@ -32,7 +32,6 @@ export class UserConsumer extends Consumer {
     if (!msg) return;
 
     const content = toJSON(msg?.content);
-    console.log('#find user content', content);
 
     const user = await this.userService
       // @ts-ignore
@@ -46,10 +45,8 @@ export class UserConsumer extends Consumer {
     if (!msg) return;
 
     const content = toJSON(msg?.content) as object;
-    console.log('create user content', content);
 
-    const userId = await this.userService.create(content);
-    console.log('created user id', userId);
+    await this.userService.create(content);
   }
 
   validateUser(msg: AmqpMessage | null): void {

@@ -1,33 +1,41 @@
 import { Container } from '../container';
 import { HomeVhost } from './vhost/home';
 
-import { AmqpServerConfig, IRabbitMq } from '../types';
+import { AmqpServerConfig, IVhost } from '../types';
 
 export class AmqpServer {
   private readonly config: AmqpServerConfig;
-  private readonly container: Container;
-  private vHostList: IRabbitMq[];
+  private container: Container | null;
+  private vHostList: IVhost[];
 
-  constructor(container: Container, config: AmqpServerConfig) {
+  constructor(config: AmqpServerConfig, container?: Container) {
     this.config = config;
-    this.container = container;
+    this.container = container || null;
     this.vHostList = [];
   }
 
-  getVHostList(): IRabbitMq[] {
+  getVHostList(): IVhost[] {
+    if (!this.vHostList?.length) {
+      this.loadVHosts();
+    }
     return this.vHostList;
   }
 
-  private loadVHosts(): IRabbitMq[] {
+  private loadVHosts() {
     this.vHostList = [
-      new HomeVhost(this.container, this.config),
+      new HomeVhost(this.config, this.container!),
     ];
-    return this.vHostList;
+  }
+
+  setContainer(c: Container): void {
+    this.container = c;
+    this.getVHostList()
+      .forEach(vHost => vHost.setContainer(c));
   }
 
   start(): Promise<void[]> {
     return Promise.all(
-      this.loadVHosts()
+      this.getVHostList()
         // rise the consumers
         .map(vh => vh.startup()),
     );

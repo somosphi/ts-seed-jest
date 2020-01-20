@@ -35,7 +35,7 @@ export class UserService {
   }
 
   sendUserQueue(user: Partial<User>): void {
-    return this.userProducer.send(
+    return this.userProducer.sendFindUser(
       R.omit(['createdAt', 'updatedAt'], user),
     );
   }

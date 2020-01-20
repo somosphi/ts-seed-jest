@@ -26,5 +26,5 @@ export type UserIntegrationAmqpConfig = {
 };
 
 export interface IUserProducer {
-  send(msg: Partial<Omit<User, 'createdAt' | 'updatedAt'>>): void;
+  sendFindUser(msg: Partial<Omit<User, 'createdAt' | 'updatedAt'>>): void;
 }

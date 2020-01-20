@@ -2,26 +2,30 @@ import { RabbitMQ } from '../rabbit';
 import { Container } from '../../container';
 import { UserConsumer } from '../consumers/user';
 
-import { AmqpConfig } from '../../types';
+import { AmqpConfig, IVhost } from '../../types';
 
-export class HomeVhost extends RabbitMQ {
-  private container: Container;
+export class HomeVhost extends RabbitMQ implements IVhost {
+  private container: Container | null;
 
-  constructor(container: Container, config: AmqpConfig) {
+  constructor(config: AmqpConfig, container?: Container) {
     super({
       config,
       vhost: config.vhostHome,
     });
-    this.container = container;
+    this.container = container || null;
   }
 
   private loadConsumers() {
     return [
       new UserConsumer({
-        container: this.container,
+        container: this.container!,
         config: this.config,
       }),
     ];
+  }
+
+  setContainer(c: Container) {
+    this.container = c;
   }
 
   startConsumers(): Promise<void[]> {

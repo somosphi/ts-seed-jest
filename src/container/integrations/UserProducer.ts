@@ -11,7 +11,7 @@ export class UserProducer implements IUserProducer {
   private vhost: IRabbitMq;
 
   constructor(config: UserIntegrationAmqpConfig) {
-    this.exchange = 'tsseed.dx';
+    this.exchange = 'tsseed.fx';
     const vhost = config.vhost.find(v => v instanceof HomeVhost);
 
     if (!vhost) throw new Error('No vHost found for UserProducer');
@@ -19,7 +19,7 @@ export class UserProducer implements IUserProducer {
     this.vhost = vhost;
   }
 
-  send(msg: Partial<Omit<User, 'createdAt' | 'updatedAt'>>) {
+  sendFindUser(msg: Partial<Omit<User, 'createdAt' | 'updatedAt'>>) {
     const rk = 'user.get';
     try {
       const pubOpts: Options.Publish = {

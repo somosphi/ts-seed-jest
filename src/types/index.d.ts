@@ -6,6 +6,7 @@ import { UserModel } from '../container/models/user';
 import { IUserModel, IUserProducer } from './User';
 import { Options, ConsumeMessage, Channel } from 'amqplib';
 import { UserService } from '../container/services/user';
+import { Container } from '../container';
 
 declare global {
   namespace jest {
@@ -156,6 +157,14 @@ interface IRabbitMq {
   send(ex: Exchange, rk: RoutingKey, msg: object, additional: Options.Publish): void;
 }
 
+export interface IVhost extends IRabbitMq {
+  /**
+   * Set the container
+   * @param c Container to use in the server
+   */
+  setContainer(c: Container): void;
+}
+
 export type MsgHandler = (msg: AmqpMessage | null) => void | Promise<void>;
 
 interface IConsumer {
@@ -171,5 +180,8 @@ interface IConsumer {
    * Consumes a message
    * @param channel Channle
    */
-  onConsume(channel: Channel, msgHandler: MsgHandler): (message: ConsumeMessage | null) => void | Promise<void>;
+  onConsume(
+    channel: Channel,
+    msgHandler: MsgHandler,
+  ): (message: ConsumeMessage | null) => void | Promise<void>;
 }
