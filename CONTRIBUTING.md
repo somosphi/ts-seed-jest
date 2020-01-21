@@ -18,3 +18,4 @@ $ git checkout -b feature/yourBranchName
 5. Make sure that your changes don't break the code or another test. To verify this run `npm run test`, it will run all the tests and the lint. If some test break, verify why and try correct this.
 6. Update the CHANGELOG.md with details of changes, in the section "Ongoing Changes".
 7. Create a merge request at the repo between your branch and the develop branch. Check the option to delete your source branch when merged. Assign of the maintainers to review the changes.
+8. Follow the [Style Guide](./STYLE.md)
