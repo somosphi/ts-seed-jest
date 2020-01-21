@@ -1,30 +1,68 @@
+import * as R from 'ramda';
 import { Router, Request, Response, NextFunction } from 'express';
 
 import { Controller } from '../controller';
 import { Container } from '../../../container';
-import { findUserSchema } from '../../schemas/v1/user';
+import { findUserSchema, createUserSchema } from '../../schemas/v1/user';
 import { validatorMiddleware } from '../../middlewares/validator';
+import { InternalServerError } from '../../../errors';
 
 import { IContainer } from '../../../types';
 
 export class UserController extends Controller {
-  protected userService: IContainer['userService'];
+  private userService: IContainer['userService'];
+  private createTransaction: IContainer['createTransaction'];
 
   constructor(container: Container) {
     super();
     this.userService = container.userService;
+    this.createTransaction = container.createTransaction;
   }
 
   register(router: Router): void {
-    router.get(
-      '/v1/users',
-      this.list.bind(this),
-    );
-    router.get(
-      '/v1/users/:id',
-      validatorMiddleware(findUserSchema),
-      this.find.bind(this),
-    );
+    router
+      .route('/v1/user')
+      .post(
+        validatorMiddleware(createUserSchema),
+        this.create.bind(this),
+      )
+      .get(this.list.bind(this));
+    router
+      .route('/v1/user/:id')
+      .get(
+        validatorMiddleware(findUserSchema),
+        this.find.bind(this),
+      );
+  }
+
+  /**
+   * Creates an user
+   * @param req
+   * @param res
+   * @param next
+   */
+  async create(req: Request, res: Response, next: NextFunction) {
+    const userToCreate = R.pipe(
+      R.propOr({}, 'body'),
+      R.pick(['name', 'username', 'emailAddress']),
+    )(req);
+
+    try {
+      let userId = null;
+      this.createTransaction(async (trx) => {
+        userId = await this.userService.create(userToCreate, trx);
+
+        if (!userId) {
+          throw new InternalServerError('Failed to create the user');
+        }
+      });
+
+      res
+        .send({ id: userId })
+        .status(201);
+    } catch (err) {
+      next(err);
+    }
   }
 
   /**

@@ -1,111 +1,174 @@
-openapi: "3.0.0"
+openapi: '3.0.2'
 info:
   version: 1.0.0
-  title: Swagger Petstore
+  title: Seed Typescript com Jest
   license:
     name: MIT
 servers:
-  - url: http://petstore.swagger.io/v1
+  - description: Server local
+    url: http://localhost:3000/v1
+
+tags:
+  - name: Usuário
+
 paths:
-  /pets:
-    get:
-      summary: List all pets
-      operationId: listPets
-      tags:
-        - pets
-      parameters:
-        - name: limit
-          in: query
-          description: How many items to return at one time (max 100)
-          required: false
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: A paged array of pets
-          headers:
-            x-next:
-              description: A link to the next page of responses
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Pets"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+  /user:
     post:
-      summary: Create a pet
-      operationId: createPets
+      description: Cria um usuário
       tags:
-        - pets
+        - Usuário
+      requestBody:
+        description: Corpo de requisição para criar um usuário
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
       responses:
-        '201':
-          description: Null response
-        default:
-          description: unexpected error
+        201:
+          description: Usuário criado com sucesso
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-  /pets/{petId}:
+                type: object
+                properties:
+                  id:
+                    $ref: '#/components/schemas/UserId'
+        400:
+          description: Resposta de Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    description: Mensagem de erro
+                    type: string
+                    example: Invalid data in the requestBody
+                  code:
+                    type: string
+                    description: Código de erro
+                    example: BAD_REQUEST
+                  details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: Invalid name
+                        code:
+                          type: string
+                          example: INVALID_PROPERTY
+        default:
+          $ref: '#/components/responses/InternalServerError'
     get:
-      summary: Info for a specific pet
-      operationId: showPetById
+      description: Busca todos usuários
       tags:
-        - pets
+        - Usuário
+      responses:
+        200:
+          description: Lista de usuários
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetUser'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /user/{id}:
+    get:
+      description: Busca usuário pelo ID
+      tags:
+        - Usuário
       parameters:
-        - name: petId
-          in: path
+        - in: path
+          name: id
+          description: ID do usuário
           required: true
-          description: The id of the pet to retrieve
           schema:
             type: string
+            example: '123'
       responses:
-        '200':
-          description: Expected response to a valid request
+        200:
+          description: Usuário
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pet"
+                $ref: '#/components/schemas/GetUser'
         default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/InternalServerError'
+
 components:
+  responses:
+    InternalServerError:
+      description: Algo inesperado aconteceu. Falha interna
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Mensagem de erro
+                example: Unexpected error
+              code:
+                type: string
+                description: Código do erro
+                example: INTERNAL_SERVER_ERROR
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Mensagem de erro
+                      example: Invalid query execution
+                    code:
+                      type: string
+                      description: Código do erro
+                      example: FAILED_QUERY
+
   schemas:
-    Pet:
+    UserId:
+      type: string
+      description: ID do usuário
+      example: '123'
+    User:
       type: object
-      required:
-        - id
-        - name
       properties:
-        id:
-          type: integer
-          format: int64
         name:
           type: string
-        tag:
+          description: Nome do usuário
+          example: José da Silva
+        username:
           type: string
-    Pets:
-      type: array
-      items:
-        $ref: "#/components/schemas/Pet"
-    Error:
-      type: object
-      required:
-        - code
-        - message
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
+          description: Nickname utilizado pelo usuário
+          example: Zé
+        emailAddress:
           type: string
+          description: Email do usuário
+          example: ze123@gmail.com
+
+    GetUser:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/UserId'
+        - type: object
+          properties:
+            createdAt:
+              type: string
+              format: date
+              description: Data de criação do usuário
+              example: '2019-02-12'
+            updatedAt:
+              type: string
+              format: date
+              description: Data da última atualização do usuário
+              example: '2019-02-22'
