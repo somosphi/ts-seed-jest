@@ -1,0 +1,105 @@
+asyncapi: 2.0.0
+id: https://github.com/somosphi/ts-seed-jest
+info:
+  title: Seed Typescript com Jest
+  version: '1.0.0'
+  description: |
+    Código exemplo para começar projetos em Typescript
+  license:
+    name: MIT
+
+servers:
+  local:
+    url: localhost
+    protocol: amqp
+    protocolVersion: 0.9.1
+    description: RabbitMQ Broker
+    variables:
+      port:
+        description: Portas de conexão do RabbitMQ
+        default: '5672'
+
+defaultContentType: application/json
+
+channels:
+  user.get:
+    description: Busca de usuários
+    bindings:
+      is: routingKey
+      exchange:
+        name: tsseed.fx
+        type: fanout
+        durable: true
+        vhost: /home
+      queue:
+        name: tsseed.user.notify
+        durable: true
+        vhost: /home
+    subscribe:
+      summary: Recebe os dados de uma busca de usuário
+      operationId: SubGetUserNotify
+      bindings:
+        amqp:
+          deliveryMode: 2 #persistent
+          mandatory: true
+      message:
+        name: userFound
+        title: Recebe dados referente a uma busca de usuário
+        payload:
+          name: SubFindUserResult
+          type: object
+          properties:
+            id:
+              type: string
+              description: ID do usuário
+              example: '123'
+            name:
+              type: string
+              description: Nome do usuário
+              example: José da Silva
+            username:
+              type: string
+              description: Nickname utilizado pelo usuário
+              example: Zé
+            emailAddress:
+              type: string
+              description: Email do usuário
+              example: ze123@gmail.com
+            createdAt:
+              type: string
+              format: date
+              description: Data de criação do usuário
+              example: '2019-02-12'
+            updatedAt:
+              type: string
+              format: date
+              description: Data da última atualização do usuário
+              example: '2019-02-22'
+  user.find:
+    description: Evento para busca de usuários
+    bindings:
+      amqp:
+        is: routingKey
+        exchange:
+          name: tsseed.dx
+          type: direct
+          durable: true
+          vhost: /home
+    publish:
+      operationId: pubFindUser
+      bindings:
+        amqp:
+          cc: ['user.get']
+          deliveryMode: 2 # persistent
+          mandatory: true
+      message:
+        name: findUserId
+        title: Envia uma busca de usuário pelo ID
+        payload:
+          name: PubFindUser
+          type: object
+          properties:
+            id:
+              type: string
+              description: ID do usuário
+              example: '123'
