@@ -21,12 +21,19 @@ export class UserProducer implements IUserProducer {
     return {
       findUser: {
         exchange: 'tsseed.fx',
-        routingKey: 'user.get',
-        pubOpts: { persistent: true },
+        routingKey: '',
+        pubOpts: {
+          persistent: true,
+          CC: ['user.get'],
+        },
       },
       notifyUserCreation: {
         exchange: 'tsseed.fx',
-        routingKey: 'user.create',
+        routingKey: '',
+        pubOpts: {
+          persistent: true,
+          CC: ['user.create'],
+        },
       },
     };
   }
