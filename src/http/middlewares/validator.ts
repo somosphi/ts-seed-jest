@@ -1,12 +1,12 @@
 import { curryN } from 'ramda';
-import { Schema } from '@hapi/joi';
+import { AnySchema } from '@hapi/joi';
 import { Request, Response, NextFunction } from 'express';
 
 import { BadRequest } from '../../errors';
 
 export const validatorMiddleware = curryN(
   4,
-  (schema: Schema, req: Request, res: Response, next: NextFunction) => {
+  (schema: AnySchema, req: Request, res: Response, next: NextFunction) => {
     const validation = schema.validate(req, {
       abortEarly: false,
       stripUnknown: true,
