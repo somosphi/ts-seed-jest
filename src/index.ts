@@ -1,5 +1,4 @@
-import { start as ElasticStart } from './helpers/elasticApm';
-ElasticStart();
+import './helpers/elasticApm';
 
 import * as R from 'ramda';
 
