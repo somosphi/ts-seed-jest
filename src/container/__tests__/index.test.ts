@@ -11,7 +11,7 @@ describe('Container', () => {
         mysqlDatabase: { transaction: jest.fn().mockReturnThis() },
         vHostList: [new HomeVhost({} as AmqpConfig)],
       });
-      expect(container.userService).not.toEqual(null);
+      expect(container.userService).toBeDefined();
     });
   });
 });
