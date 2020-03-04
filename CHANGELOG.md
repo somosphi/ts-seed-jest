@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Minor changes to the tests
 - Bump new versions of packages after npm audit fix
+- Container tests passing with undefined properties
 
 ### Changed
 - Modified the readme to have a better explanation to run the project
