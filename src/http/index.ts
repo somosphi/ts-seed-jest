@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import compression from 'compression';
+import responseTime from 'response-time';
 
 import { ExpressLogger } from '../logger';
 import { Container } from '../container';
@@ -55,6 +56,7 @@ export class HttpServer {
     app.use(bodyParser.json({
       limit: this.config.bodyLimit,
     }));
+    app.use(responseTime({ suffix: false }));
 
     /** Add Logger to Express */
     app.use(ExpressLogger.onSuccess.bind(ExpressLogger));

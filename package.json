@@ -33,6 +33,7 @@
     "@types/helmet": "0.0.45",
     "@types/moment-timezone": "^0.5.12",
     "@types/ramda": "^0.26.34",
+    "@types/response-time": "^2.3.4",
     "amqplib": "^0.5.5",
     "axios": "^0.19.0",
     "body-parser": "^1.19.0",
@@ -47,6 +48,7 @@
     "mysql2": "^2.0.1",
     "ramda": "^0.26.1",
     "ramda-adjunct": "^2.24.0",
+    "response-time": "^2.3.2",
     "ts-node": "^8.5.0",
     "typescript": "^3.7.2"
   },
