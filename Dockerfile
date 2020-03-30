@@ -8,7 +8,7 @@ WORKDIR /opt/app/
 
 COPY . .
 
-RUN npm install --production
+RUN npm install
 RUN npm run build
 
 EXPOSE ${SERVICEPORT}
