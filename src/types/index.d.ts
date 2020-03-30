@@ -1,5 +1,4 @@
 import knex from 'knex';
-import { Router } from 'express';
 import { AnySchema } from '@hapi/joi';
 import { Options, ConsumeMessage, Channel, Connection } from 'amqplib';
 
@@ -31,8 +30,6 @@ export type Nullable<T> = T | undefined | null;
 export type UUID<T> = T;
 
 type Env = {
-  readonly httpPort: number;
-  readonly httpBodyLimit: string;
   readonly userServiceHelper?: string;
   readonly dbPort: number;
   readonly dbHost: string;
@@ -54,8 +51,6 @@ type Env = {
 export type AppConfig =
   Pick<
     Env,
-    'httpPort' |
-    'httpBodyLimit' |
     'rabbitMqHost' |
     'rabbitMqProtocol' |
     'rabbitMqPort' |
@@ -64,11 +59,6 @@ export type AppConfig =
     'rabbitMqReconnectTimeout' |
     'rabbitMqVhostHome'
   >;
-
-export type HttpServerConfig = {
-  port: Env['httpPort'];
-  bodyLimit: Env['httpBodyLimit'];
-};
 
 interface ICodedError {
   message: string;
@@ -90,10 +80,6 @@ export type ContainerConfig = {
   mysqlDatabase: knex;
   vHostList: IVhost[];
 };
-
-export interface IController {
-  register(router: Router): void;
-}
 
 export type UpdateParams<T> = {
   filters: Partial<{

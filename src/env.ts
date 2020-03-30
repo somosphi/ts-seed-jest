@@ -4,9 +4,6 @@ import { Env } from './types';
 dotenv.config();
 
 export const env: Env = {
-  // HTTP server config
-  httpPort: (process.env.PORT && parseInt(process.env.PORT, 10)) || 3000,
-  httpBodyLimit: process.env.BODY_LIMIT || '10kb',
   userServiceHelper: process.env.USER_SERVICE_HELPER_URL,
 
   // Database config
@@ -26,6 +23,5 @@ export const env: Env = {
   rabbitMqUsername: process.env.RABBIT_USERNAME,
   rabbitMqPassword: process.env.RABBIT_PASSWORD,
   rabbitMqReconnectTimeout: parseInt(process.env.RABBIT_RECONNECT_TIMEOUT || '5000', 10),
-
   rabbitMqVhostHome: process.env.RABBIT_VHOST_HOME || '',
 };

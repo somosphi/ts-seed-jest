@@ -5,30 +5,18 @@ import { AmqpServer } from './amqp';
 import { Container } from './container';
 import { Logger as logger } from './logger';
 import database from './helpers/database';
-import { HttpServer } from './http';
 
 import {
-  AppConfig, HttpServerConfig,
+  AppConfig,
   AmqpServerConfig,
 } from './types';
 
 export class Application {
   private readonly config: AppConfig;
-  private httpServer?: HttpServer;
   private amqpServer?: AmqpServer;
 
   constructor(config: AppConfig) {
     this.config = config;
-  }
-
-  /**
-   * Returns the HTTP server
-   */
-  private getHttpServer(): HttpServer {
-    if (!this.httpServer) {
-      throw new Error('Failed to start HTTP server');
-    }
-    return this.httpServer;
   }
 
   /**
@@ -39,24 +27,6 @@ export class Application {
       throw new Error('Failed to start AMQP server');
     }
     return this.amqpServer;
-  }
-
-  /**
-   * Creates an instance of the HTTP server
-   * @param container Container
-   */
-  private setupHttpServer(container: Container): void {
-    const getServerConfig = R.pipe(
-      R.pick(['httpPort', 'httpBodyLimit']),
-      RA.renameKeys({
-        httpPort: 'port',
-        httpBodyLimit: 'bodyLimit',
-      }) as (_: object) => HttpServerConfig,
-    );
-    this.httpServer = new HttpServer(
-      container,
-      getServerConfig(this.config),
-    );
   }
 
   /**
@@ -85,19 +55,6 @@ export class Application {
   }
 
   /**
-   * Start all servers
-   */
-  private async initServers(): Promise<void> {
-    const httpServer = this.getHttpServer();
-    httpServer.start();
-    logger.info(`HTTP server started in port ${httpServer.port}`);
-
-    const amqpServer = this.getAmqpServer();
-    await amqpServer.start();
-    logger.info('AMQP server started');
-  }
-
-  /**
    * Start the app
    */
   async start(): Promise<void> {
@@ -109,8 +66,9 @@ export class Application {
     });
 
     this.amqpServer?.setContainer(container);
-    this.setupHttpServer(container);
 
-    await this.initServers();
+    const amqpServer = this.getAmqpServer();
+    await amqpServer.start();
+    logger.info('AMQP server started');
   }
 }

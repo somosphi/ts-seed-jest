@@ -10,8 +10,6 @@ import { AppConfig } from './types';
 
 const appConfig: AppConfig = R.pick(
   [
-    'httpPort',
-    'httpBodyLimit',
     'rabbitMqHost',
     'rabbitMqProtocol',
     'rabbitMqPort',
