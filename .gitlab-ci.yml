@@ -1,9 +1,11 @@
-image: alpine
+image: payly/node-gitlab-ci:latest
 
 stages:
   - test
+  - sonarqube
+  # - build
+  # - push
+  # - deploy
 
-test-dev:
-  stage: test
-  script:
-    - echo 'testing...'
+include:
+  - local: './scripts/test.yaml'
