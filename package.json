@@ -9,7 +9,7 @@
     "build": "rm -rf dist && tsc",
     "test": "jest \\.test\\.ts",
     "test:unit": "jest \\.unit\\.test\\.ts",
-    "cover": "jest --coverage",
+    "test:coverage": "jest --coverage",
     "lint": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'",
     "migrate:create": "./node_modules/knex/bin/cli.js migrate:make $MIGRATE_NAME --env local",
     "migrate:up": "./node_modules/knex/bin/cli.js migrate:latest --env local"
