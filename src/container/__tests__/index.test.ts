@@ -1,6 +1,4 @@
 import { Container } from '..';
-import { HomeVhost } from '../../amqp/vhost/home';
-import { AmqpConfig } from '../../types';
 
 describe('Container', () => {
 
@@ -9,7 +7,6 @@ describe('Container', () => {
       const container = new Container({
         // @ts-ignore
         mysqlDatabase: { transaction: jest.fn().mockReturnThis() },
-        vHostList: [new HomeVhost({} as AmqpConfig)],
       });
       expect(container.userService).toBeDefined();
     });
