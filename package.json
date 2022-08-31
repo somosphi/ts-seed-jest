@@ -34,7 +34,7 @@
     "express": "^4.17.1",
     "helmet": "^3.18.0",
     "knex": "^0.20.2",
-    "moment-timezone": "^0.5.25",
+    "moment-timezone": "^0.5.35",
     "mysql2": "^2.0.1",
     "ramda": "^0.26.1",
     "ramda-adjunct": "^2.24.0",
